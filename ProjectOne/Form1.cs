@@ -20,14 +20,17 @@ namespace ProjectOne
         FormLog m_formlog = new FormLog();
         Interface m_intface = new Interface();
 
-        public string Version = "V1.0";
+        public string Version = "V1.0.0";
         public int iNowDut;
+        public int TimeCount = 0;
 
         public Label[] labels = new Label[4];
+        public Label[] labelpasss = new Label[4];
+        public Label[] labelfails = new Label[4];
         public ListView[] listViews = new ListView[4];
-        public System.Windows.Forms.Timer[] timers = new System.Windows.Forms.Timer[4];
         public string[] BSN = new string[4];
-        public int[] TimeCount = new int[4];
+        public int[] iPass = new int[4];
+        public int[] iFail = new int[4];
 
         //NFC
         public bool bOnlyOne = false;
@@ -38,6 +41,7 @@ namespace ProjectOne
         {
             InitializeComponent();
             CheckForIllegalCrossThreadCalls = false;
+            this.AutoSize = true;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -81,26 +85,17 @@ namespace ProjectOne
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            TimeCount[0] += 1;
-            this.label1.Text = TimeCount[0].ToString().Trim();
+            TimeCount += 1;
+            labelTime.Text = TimeCount.ToString();
         }
 
-        private void timer2_Tick(object sender, EventArgs e)
+        private void Form1_ResizeEnd(object sender, EventArgs e)
         {
-            TimeCount[1] += 1;
-            this.label2.Text = TimeCount[1].ToString().Trim();
-        }
-
-        private void timer3_Tick(object sender, EventArgs e)
-        {
-            TimeCount[2] += 1;
-            this.label3.Text = TimeCount[2].ToString().Trim();
-        }
-
-        private void timer4_Tick(object sender, EventArgs e)
-        {
-            TimeCount[3] += 1;
-            this.label4.Text = TimeCount[3].ToString().Trim();
+            this.tableLayoutPanel2.Dock = DockStyle.Fill;
+            for (int i = 0; i < m_intface.GetDutNum(); i++)
+            {
+                listViews[i].Height = this.tableLayoutPanel2.Height-120;
+            }
         }
 
         /// <summary>
@@ -115,22 +110,31 @@ namespace ProjectOne
                 this.labelMes.Text = (m_intface.GetMesStatus() == 1 ? "ONLINE" : "OFFLINE");
                 this.labelMes.BackColor = (m_intface.GetMesStatus() == 1 ? Color.GreenYellow : Color.Red);
 
+                this.timer1.Enabled = true;
+                this.timer1.Interval = 1000;
+                this.timer1.Start();
+
                 labels[0] = this.statuslabel1;
                 labels[1] = this.statuslabel2;
                 labels[2] = this.statuslabel3;
                 labels[3] = this.statuslabel4;
 
+                labelpasss[0] = this.labelpass1;
+                labelpasss[1] = this.labelpass2;
+                labelpasss[2] = this.labelpass3;
+                labelpasss[3] = this.labelpass4;
+                iPass[0] = iPass[1] = iPass[2] = iPass[3] = 0;
+
+                labelfails[0] = this.labelfail1;
+                labelfails[1] = this.labelfail2;
+                labelfails[2] = this.labelfail3;
+                labelfails[3] = this.labelfail4;
+                iFail[0] = iFail[1] = iFail[2] = iFail[3] = 0;
+
                 listViews[0] = this.listView1;
                 listViews[1] = this.listView2;
                 listViews[2] = this.listView3;
                 listViews[3] = this.listView4;
-
-                timers[0] = this.timer1;
-                timers[1] = this.timer2;
-                timers[2] = this.timer3;
-                timers[3] = this.timer4;
-
-                TimeCount[0] = TimeCount[1] = TimeCount[2] = TimeCount[3] = 0;
 
                 for (int i = 0; i < m_intface.GetDutNum(); i++)
                 {
@@ -174,6 +178,7 @@ namespace ProjectOne
             listV.Items.Clear();
             listV.View = View.Details;
 
+            listV.Height = this.tableLayoutPanel2.Height - 120;
             int width = listV.ClientRectangle.Width;
 
             listV.Columns.Add("Index", (int)(width * 0.1), HorizontalAlignment.Left);
@@ -211,7 +216,53 @@ namespace ProjectOne
         }
 
         /// <summary>
-        /// 测试主函数
+        /// 测试开始控件操作
+        /// </summary>
+        /// <param name="i"></param>
+        private void TestBegin(int i)
+        {
+            listViews[i].Items.Clear();
+            m_formlog.listViews[i].Items.Clear();
+            labels[i].Text = "RUN";
+            labels[i].BackColor = Color.Yellow;
+        }
+
+        /// <summary>
+        /// 测试Pass控件操作
+        /// </summary>
+        /// <param name="i"></param>
+        private void TestPassEnd(int i)
+        {
+            labels[i].Text = "PASS";
+            labels[i].BackColor = Color.Green;
+            iPass[i] += 1;
+            labelpasss[i].Text = iPass[i].ToString();
+        }
+
+        /// <summary>
+        /// 测试Fail控件操作
+        /// </summary>
+        /// <param name="i"></param>
+        private void TestFailEnd(int i)
+        {
+            labels[i].Text = "FAIL";
+            labels[i].BackColor = Color.Red;
+            iFail[i] += 1;
+            labelfails[i].Text = iFail[i].ToString();
+        }
+
+        /// <summary>
+        /// 测试结束控件操作
+        /// </summary>
+        /// <param name="i"></param>
+        private void TestFinal(int i)
+        {
+            labels[i].Text = "WAIT";
+            labels[i].BackColor = Color.Gray;
+        }
+
+        /// <summary>
+        /// 测试主函数模板
         /// </summary>
         public void MainTest()
         {
@@ -220,10 +271,7 @@ namespace ProjectOne
             try
             {
                 m_intface.DetectPort(true, m_intface.GetComPort(i));
-                listViews[i].Items.Clear();
-                m_formlog.listViews[i].Items.Clear();
-                labels[i].Text = "RUN";
-                labels[i].BackColor = Color.Yellow;
+                TestBegin(i);
 
                 DevcieInit(i);//设备初始化
                 InsertListView(listViews[i], "InitDevice", "-", "-", "-", true);
@@ -237,13 +285,11 @@ namespace ProjectOne
                 InsertListView(listViews[i], "GetPhoneBSN", BSN[i], "-", "-", true);
 
                 //Final
-                labels[i].Text = "PASS";
-                labels[i].BackColor = Color.Green;
+                TestPassEnd(i);
             }
             catch (Exception ex)
             {
-                labels[i].Text = "FAIL";
-                labels[i].BackColor = Color.Red;
+                TestFailEnd(i);
                 bResult = false;
                 m_formlog.InsertListView(i, ex.Message);
             }
@@ -251,8 +297,7 @@ namespace ProjectOne
             {
                 SaveLog(i, bResult);
                 m_intface.DetectPort(false, m_intface.GetComPort(i));
-                labels[i].Text = "WAIT";
-                labels[i].BackColor = Color.Gray;
+                TestFinal(i);
                 iNowDut = i;
                 Thread Test = new Thread(new ThreadStart(NFCTest1));
                 Test.Start();
@@ -271,10 +316,7 @@ namespace ProjectOne
             {
                 bOnlyOne = false;
                 m_intface.DetectPort(true, m_intface.GetComPort(i));
-                listViews[i].Items.Clear();
-                m_formlog.listViews[i].Items.Clear();
-                labels[i].Text = "RUN";
-                labels[i].BackColor = Color.Yellow;
+                TestBegin(i);
 
                 DevcieInit(i);//设备初始化
                 InsertListView(listViews[i], "InitDevice", "-", "-", "-", true);
@@ -340,14 +382,13 @@ namespace ProjectOne
                     Thread.Sleep(10);
                 }
                 bTest1 = false;
+
                 //Final
-                labels[i].Text = "PASS";
-                labels[i].BackColor = Color.Green;
+                TestPassEnd(i);
             }
             catch (Exception ex)
             {
-                labels[i].Text = "FAIL";
-                labels[i].BackColor = Color.Red;
+                TestFailEnd(i);
                 bResult = false;
                 bOnlyOne = true;
                 m_formlog.InsertListView(i, ex.Message);
@@ -356,8 +397,7 @@ namespace ProjectOne
             {
                 SaveLog(i, bResult);
                 m_intface.DetectPort(false, m_intface.GetComPort(i));
-                labels[i].Text = "WAIT";
-                labels[i].BackColor = Color.Gray;
+                TestFinal(i);
                 iNowDut = i;
                 Thread Test = new Thread(new ThreadStart(NFCTest1));
                 Test.Start();
@@ -375,10 +415,7 @@ namespace ProjectOne
             try
             {
                 m_intface.DetectPort(true, m_intface.GetComPort(i));
-                listViews[i].Items.Clear();
-                m_formlog.listViews[i].Items.Clear();
-                labels[i].Text = "RUN";
-                labels[i].BackColor = Color.Yellow;
+                TestBegin(i);
 
                 DevcieInit(i);//设备初始化
                 InsertListView(listViews[i], "InitDevice", "-", "-", "-", true);
@@ -447,13 +484,11 @@ namespace ProjectOne
                 bTest2 = false;
 
                 //Final
-                labels[i].Text = "PASS";
-                labels[i].BackColor = Color.Green;
+                TestPassEnd(i);
             }
             catch (Exception ex)
             {
-                labels[i].Text = "FAIL";
-                labels[i].BackColor = Color.Red;
+                TestFailEnd(i);
                 bResult = false;
                 bOnlyOne = true;
                 m_formlog.InsertListView(i, ex.Message);
@@ -462,8 +497,7 @@ namespace ProjectOne
             {
                 SaveLog(i, bResult);
                 m_intface.DetectPort(false, m_intface.GetComPort(i));
-                labels[i].Text = "WAIT";
-                labels[i].BackColor = Color.Gray;
+                TestFinal(i);
                 iNowDut = i;
                 Thread Test = new Thread(new ThreadStart(NFCTest2));
                 Test.Start();
