@@ -106,24 +106,42 @@ namespace Addins.Config
 		public string sProject;
 		public string sStation;
 		public int iDutNum;
+
+		public string LogPath;
+
+		public int MesOn;
+	}
+
+	public class DutConfig
+	{
+		public int iComNum;
+		public string sDeviceID;
 	}
 
 	public class ConfigParser
 	{
 		private MainConfig m_mainConfig = new MainConfig();
+		private DutConfig m_dutConfig = new DutConfig();
 
 		/// <summary>
 		/// 构造函数
 		/// </summary>
 		/// <param name="sMainPath">main.ini文件路径</param>
+		/// <param name="sDutPath">dut.ini文件路径</param>
+		/// <param name="iDut">i</param>
 		public ConfigParser(string sMainPath)
 		{
 			ConfigFile m_Mainini = new ConfigFile(sMainPath);
-
-			//UI
+			//Main UI
 			m_mainConfig.sProject = m_Mainini.ReadString("UI","Project","Jason");
 			m_mainConfig.sStation = m_Mainini.ReadString("UI", "Station", "Test");
 			m_mainConfig.iDutNum = m_Mainini.ReadInt("UI","DutNum",1);
+
+			//Main Test
+			m_mainConfig.LogPath = m_Mainini.ReadString("TEST", "LogPath", "D:\\TestLog");
+
+			//Main Mes
+			m_mainConfig.MesOn = m_Mainini.ReadInt("MES", "MesOn", 1);
 		}
 
 		/// <summary>
@@ -133,6 +151,23 @@ namespace Addins.Config
 		public MainConfig GetMainPara()
 		{
 			return m_mainConfig;
+		}
+
+		/// <summary>
+		/// 获取Dut.ini文件数据
+		/// </summary>
+		/// <param name="sDutPath"></param>
+		/// <param name="iDut"></param>
+		/// <returns></returns>
+		public DutConfig GetDutPara(string sDutPath, int iDut)
+		{
+			ConfigFile m_Dutini = new ConfigFile(sDutPath);
+			//Dut
+			string sDut = "DUT" + (iDut + 1).ToString();
+			m_dutConfig.iComNum = m_Dutini.ReadInt(sDut, "ComNum", 1);
+			m_dutConfig.sDeviceID = m_Dutini.ReadString(sDut, "DeviceID", "");
+
+			return m_dutConfig;
 		}
 	}
 }
