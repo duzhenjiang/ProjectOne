@@ -13,10 +13,12 @@ namespace ToolSolution
     {
         readonly FormLog m_formlog = new FormLog();
         readonly Interface m_intface = new Interface();
+        FormScan m_formscan = new FormScan();
 
         public string Version = "V1.0.0";
         public int iNowDut;
         public int TimeCount = 0;
+        public string ScanText;
 
         public Label[] labels = new Label[4];
         public Label[] labelpasss = new Label[4];
@@ -35,6 +37,9 @@ namespace ToolSolution
         public bool bTest1 = false;
         public bool bTest2 = false;
 
+        //SCAN
+        public string sText;
+
         public Form1()
         {
             InitializeComponent();
@@ -45,7 +50,7 @@ namespace ToolSolution
         {
             InitUI();
 
-            if (m_intface.GetStation()=="NFC")
+            if (m_intface.GetStation() == "NFC")
             {
                 for (int i = 0; i < m_intface.GetDutNum(); i++)
                 {
@@ -145,6 +150,12 @@ namespace ToolSolution
                 listViews[i].Columns[6].Width = (int)(width * 0.1);
             }
         }
+
+        //private void labelMes_MouseHover(object sender, EventArgs e)
+        //{
+        //    string sExePath = Environment.CurrentDirectory;
+        //    System.Diagnostics.Process.Start("explorer.exe", sExePath);
+        //}
 
         private void timer1_Tick(object sender, EventArgs e)
         {
@@ -280,6 +291,29 @@ namespace ToolSolution
         }
 
         /// <summary>
+        /// 测试扫描操作
+        /// </summary>
+        private void TestScan()
+        {
+            if (m_intface.GetScanEnable() && m_intface.GetDutNum() == 1)
+            {
+                MethodInvoker methodInvoker = new MethodInvoker(OpenScanForm);
+                BeginInvoke(methodInvoker);
+
+                while (true)
+                {
+                    if (m_formscan.textBoxScan.Text != null && m_formscan.textBoxScan.Text.Replace(" ", "").Length == 12)
+                    {
+                        ScanText = m_formscan.textBoxScan.Text;
+                        break;
+                    }
+                }
+
+                HideScanForm();
+            }
+        }
+
+        /// <summary>
         /// 测试开始控件操作
         /// </summary>
         /// <param name="i"></param>
@@ -337,11 +371,13 @@ namespace ToolSolution
         /// </summary>
         public void MainTest()
         {
+            BEGIN:
             int i = iNowDut;
             bool bResult = true;
             try
             {
                 KillProcess("adb");
+                TestScan();
                 m_intface.DetectPort(true, m_intface.GetComPort(i));
                 TestBegin(i);
 
@@ -371,9 +407,8 @@ namespace ToolSolution
                 m_intface.DetectPort(false, m_intface.GetComPort(i));
                 TestFinal(i);
                 iNowDut = i;
-                Thread Test = new Thread(new ThreadStart(MainTest));
-                Test.Start();
             }
+            goto BEGIN;
         }
 
         /// <summary>
@@ -381,6 +416,7 @@ namespace ToolSolution
         /// </summary>
         public void NFCTest1()
         {
+            BEGIN:
             int i = iNowDut;
             bool bResult = true;
             bOnlyOne = false;
@@ -471,9 +507,8 @@ namespace ToolSolution
                 m_intface.DetectPort(false, m_intface.GetComPort(i));
                 TestFinal(i);
                 iNowDut = i;
-                Thread Test = new Thread(new ThreadStart(NFCTest1));
-                Test.Start();
             }
+            goto BEGIN;
         }
 
         /// <summary>
@@ -481,6 +516,7 @@ namespace ToolSolution
         /// </summary>
         public void NFCTest2()
         {
+            BEGIN:
             int i = iNowDut;
             bool bResult = true;
             bOnlyOne = false;
@@ -571,9 +607,8 @@ namespace ToolSolution
                 m_intface.DetectPort(false, m_intface.GetComPort(i));
                 TestFinal(i);
                 iNowDut = i;
-                Thread Test = new Thread(new ThreadStart(NFCTest2));
-                Test.Start();
             }
+            goto BEGIN;
         }
 
         /// <summary>
@@ -656,6 +691,23 @@ namespace ToolSolution
                 sw.Close();
                 fs.Close();
             }
+        }
+
+        /// <summary>
+        /// 打开输入窗体
+        /// </summary>
+        private void OpenScanForm()
+        {
+            m_formscan.Show();
+        }
+
+        /// <summary>
+        /// 关闭输入窗体
+        /// </summary>
+        private void HideScanForm()
+        {
+            m_formscan.Hide();
+            m_formscan.textBoxScan.Text = null;
         }
 
         /// <summary>

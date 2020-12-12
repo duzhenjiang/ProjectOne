@@ -31,6 +31,7 @@ namespace ToolSolution
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.listView4 = new System.Windows.Forms.ListView();
@@ -42,7 +43,9 @@ namespace ToolSolution
             this.labelpass1 = new System.Windows.Forms.Label();
             this.tableLayoutPanel8 = new System.Windows.Forms.TableLayoutPanel();
             this.labelBsn1 = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
             this.tableLayoutPanel12 = new System.Windows.Forms.TableLayoutPanel();
+            this.button2 = new System.Windows.Forms.Button();
             this.tableLayoutPanel9 = new System.Windows.Forms.TableLayoutPanel();
             this.labelBsn2 = new System.Windows.Forms.Label();
             this.statuslabel2 = new System.Windows.Forms.Label();
@@ -50,6 +53,7 @@ namespace ToolSolution
             this.labelfail2 = new System.Windows.Forms.Label();
             this.labelpass2 = new System.Windows.Forms.Label();
             this.tableLayoutPanel13 = new System.Windows.Forms.TableLayoutPanel();
+            this.button3 = new System.Windows.Forms.Button();
             this.tableLayoutPanel10 = new System.Windows.Forms.TableLayoutPanel();
             this.labelBsn3 = new System.Windows.Forms.Label();
             this.statuslabel3 = new System.Windows.Forms.Label();
@@ -57,6 +61,7 @@ namespace ToolSolution
             this.labelfail3 = new System.Windows.Forms.Label();
             this.labelpass3 = new System.Windows.Forms.Label();
             this.tableLayoutPanel14 = new System.Windows.Forms.TableLayoutPanel();
+            this.button4 = new System.Windows.Forms.Button();
             this.tableLayoutPanel15 = new System.Windows.Forms.TableLayoutPanel();
             this.labelBsn4 = new System.Windows.Forms.Label();
             this.statuslabel4 = new System.Windows.Forms.Label();
@@ -66,9 +71,8 @@ namespace ToolSolution
             this.listView1 = new System.Windows.Forms.ListView();
             this.listView2 = new System.Windows.Forms.ListView();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
-            this.labelTime = new System.Windows.Forms.Label();
             this.labelMes = new System.Windows.Forms.Label();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.labelTime = new System.Windows.Forms.Label();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel11.SuspendLayout();
@@ -86,6 +90,10 @@ namespace ToolSolution
             this.tableLayoutPanel3.SuspendLayout();
             this.SuspendLayout();
             // 
+            // timer1
+            // 
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
             // tableLayoutPanel1
             // 
             this.tableLayoutPanel1.ColumnCount = 1;
@@ -98,8 +106,8 @@ namespace ToolSolution
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1280, 847);
-            this.tableLayoutPanel1.TabIndex = 0;
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1280, 679);
+            this.tableLayoutPanel1.TabIndex = 1;
             // 
             // tableLayoutPanel2
             // 
@@ -122,7 +130,7 @@ namespace ToolSolution
             this.tableLayoutPanel2.RowCount = 2;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(1274, 781);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(1274, 613);
             this.tableLayoutPanel2.TabIndex = 0;
             // 
             // listView4
@@ -131,7 +139,7 @@ namespace ToolSolution
             this.listView4.HideSelection = false;
             this.listView4.Location = new System.Drawing.Point(957, 63);
             this.listView4.Name = "listView4";
-            this.listView4.Size = new System.Drawing.Size(314, 715);
+            this.listView4.Size = new System.Drawing.Size(314, 547);
             this.listView4.TabIndex = 11;
             this.listView4.UseCompatibleStateImageBehavior = false;
             // 
@@ -141,19 +149,21 @@ namespace ToolSolution
             this.listView3.HideSelection = false;
             this.listView3.Location = new System.Drawing.Point(639, 63);
             this.listView3.Name = "listView3";
-            this.listView3.Size = new System.Drawing.Size(312, 715);
+            this.listView3.Size = new System.Drawing.Size(312, 547);
             this.listView3.TabIndex = 10;
             this.listView3.UseCompatibleStateImageBehavior = false;
             // 
             // tableLayoutPanel11
             // 
-            this.tableLayoutPanel11.ColumnCount = 3;
+            this.tableLayoutPanel11.ColumnCount = 4;
+            this.tableLayoutPanel11.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
             this.tableLayoutPanel11.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
             this.tableLayoutPanel11.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel11.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
             this.tableLayoutPanel11.Controls.Add(this.statuslabel1, 0, 0);
-            this.tableLayoutPanel11.Controls.Add(this.tableLayoutPanel4, 2, 0);
+            this.tableLayoutPanel11.Controls.Add(this.tableLayoutPanel4, 3, 0);
             this.tableLayoutPanel11.Controls.Add(this.tableLayoutPanel8, 1, 0);
+            this.tableLayoutPanel11.Controls.Add(this.button1, 2, 0);
             this.tableLayoutPanel11.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel11.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel11.Name = "tableLayoutPanel11";
@@ -218,16 +228,16 @@ namespace ToolSolution
             // 
             // tableLayoutPanel8
             // 
-            this.tableLayoutPanel8.ColumnCount = 2;
+            this.tableLayoutPanel8.ColumnCount = 1;
             this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
-            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel8.Controls.Add(this.labelBsn1, 0, 0);
             this.tableLayoutPanel8.Location = new System.Drawing.Point(103, 3);
             this.tableLayoutPanel8.Name = "tableLayoutPanel8";
             this.tableLayoutPanel8.RowCount = 2;
             this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel8.Size = new System.Drawing.Size(156, 48);
+            this.tableLayoutPanel8.Size = new System.Drawing.Size(94, 48);
             this.tableLayoutPanel8.TabIndex = 2;
             // 
             // labelBsn1
@@ -242,15 +252,29 @@ namespace ToolSolution
             this.labelBsn1.TabIndex = 0;
             this.labelBsn1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // button1
+            // 
+            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.button1.Location = new System.Drawing.Point(209, 3);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(50, 48);
+            this.button1.TabIndex = 3;
+            this.button1.Text = "START";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Visible = false;
+            // 
             // tableLayoutPanel12
             // 
-            this.tableLayoutPanel12.ColumnCount = 3;
+            this.tableLayoutPanel12.ColumnCount = 4;
+            this.tableLayoutPanel12.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
             this.tableLayoutPanel12.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
             this.tableLayoutPanel12.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel12.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
+            this.tableLayoutPanel12.Controls.Add(this.button2, 0, 0);
             this.tableLayoutPanel12.Controls.Add(this.tableLayoutPanel9, 0, 0);
             this.tableLayoutPanel12.Controls.Add(this.statuslabel2, 0, 0);
-            this.tableLayoutPanel12.Controls.Add(this.tableLayoutPanel5, 2, 0);
+            this.tableLayoutPanel12.Controls.Add(this.tableLayoutPanel5, 3, 0);
             this.tableLayoutPanel12.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel12.Location = new System.Drawing.Point(321, 3);
             this.tableLayoutPanel12.Name = "tableLayoutPanel12";
@@ -260,18 +284,30 @@ namespace ToolSolution
             this.tableLayoutPanel12.TabIndex = 5;
             this.tableLayoutPanel12.Visible = false;
             // 
+            // button2
+            // 
+            this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.button2.Location = new System.Drawing.Point(209, 3);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(50, 48);
+            this.button2.TabIndex = 4;
+            this.button2.Text = "START";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Visible = false;
+            // 
             // tableLayoutPanel9
             // 
-            this.tableLayoutPanel9.ColumnCount = 2;
+            this.tableLayoutPanel9.ColumnCount = 1;
             this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
-            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel9.Controls.Add(this.labelBsn2, 0, 0);
             this.tableLayoutPanel9.Location = new System.Drawing.Point(103, 3);
             this.tableLayoutPanel9.Name = "tableLayoutPanel9";
             this.tableLayoutPanel9.RowCount = 2;
             this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel9.Size = new System.Drawing.Size(156, 48);
+            this.tableLayoutPanel9.Size = new System.Drawing.Size(94, 48);
             this.tableLayoutPanel9.TabIndex = 3;
             // 
             // labelBsn2
@@ -342,13 +378,15 @@ namespace ToolSolution
             // 
             // tableLayoutPanel13
             // 
-            this.tableLayoutPanel13.ColumnCount = 3;
+            this.tableLayoutPanel13.ColumnCount = 4;
+            this.tableLayoutPanel13.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
             this.tableLayoutPanel13.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
             this.tableLayoutPanel13.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel13.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
+            this.tableLayoutPanel13.Controls.Add(this.button3, 0, 0);
             this.tableLayoutPanel13.Controls.Add(this.tableLayoutPanel10, 0, 0);
             this.tableLayoutPanel13.Controls.Add(this.statuslabel3, 0, 0);
-            this.tableLayoutPanel13.Controls.Add(this.tableLayoutPanel6, 2, 0);
+            this.tableLayoutPanel13.Controls.Add(this.tableLayoutPanel6, 3, 0);
             this.tableLayoutPanel13.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel13.Location = new System.Drawing.Point(639, 3);
             this.tableLayoutPanel13.Name = "tableLayoutPanel13";
@@ -358,18 +396,30 @@ namespace ToolSolution
             this.tableLayoutPanel13.TabIndex = 6;
             this.tableLayoutPanel13.Visible = false;
             // 
+            // button3
+            // 
+            this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.button3.Location = new System.Drawing.Point(209, 3);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(50, 48);
+            this.button3.TabIndex = 4;
+            this.button3.Text = "START";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Visible = false;
+            // 
             // tableLayoutPanel10
             // 
-            this.tableLayoutPanel10.ColumnCount = 2;
+            this.tableLayoutPanel10.ColumnCount = 1;
             this.tableLayoutPanel10.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
-            this.tableLayoutPanel10.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel10.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel10.Controls.Add(this.labelBsn3, 0, 0);
             this.tableLayoutPanel10.Location = new System.Drawing.Point(103, 3);
             this.tableLayoutPanel10.Name = "tableLayoutPanel10";
             this.tableLayoutPanel10.RowCount = 2;
             this.tableLayoutPanel10.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel10.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel10.Size = new System.Drawing.Size(156, 48);
+            this.tableLayoutPanel10.Size = new System.Drawing.Size(94, 48);
             this.tableLayoutPanel10.TabIndex = 3;
             // 
             // labelBsn3
@@ -439,13 +489,15 @@ namespace ToolSolution
             // 
             // tableLayoutPanel14
             // 
-            this.tableLayoutPanel14.ColumnCount = 3;
+            this.tableLayoutPanel14.ColumnCount = 4;
+            this.tableLayoutPanel14.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
             this.tableLayoutPanel14.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
             this.tableLayoutPanel14.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel14.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
+            this.tableLayoutPanel14.Controls.Add(this.button4, 0, 0);
             this.tableLayoutPanel14.Controls.Add(this.tableLayoutPanel15, 0, 0);
             this.tableLayoutPanel14.Controls.Add(this.statuslabel4, 0, 0);
-            this.tableLayoutPanel14.Controls.Add(this.tableLayoutPanel7, 2, 0);
+            this.tableLayoutPanel14.Controls.Add(this.tableLayoutPanel7, 3, 0);
             this.tableLayoutPanel14.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel14.Location = new System.Drawing.Point(957, 3);
             this.tableLayoutPanel14.Name = "tableLayoutPanel14";
@@ -455,18 +507,30 @@ namespace ToolSolution
             this.tableLayoutPanel14.TabIndex = 7;
             this.tableLayoutPanel14.Visible = false;
             // 
+            // button4
+            // 
+            this.button4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.button4.Location = new System.Drawing.Point(211, 3);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(50, 48);
+            this.button4.TabIndex = 4;
+            this.button4.Text = "START";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Visible = false;
+            // 
             // tableLayoutPanel15
             // 
-            this.tableLayoutPanel15.ColumnCount = 2;
+            this.tableLayoutPanel15.ColumnCount = 1;
             this.tableLayoutPanel15.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
-            this.tableLayoutPanel15.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel15.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel15.Controls.Add(this.labelBsn4, 0, 0);
             this.tableLayoutPanel15.Location = new System.Drawing.Point(103, 3);
             this.tableLayoutPanel15.Name = "tableLayoutPanel15";
             this.tableLayoutPanel15.RowCount = 2;
             this.tableLayoutPanel15.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel15.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel15.Size = new System.Drawing.Size(156, 48);
+            this.tableLayoutPanel15.Size = new System.Drawing.Size(94, 48);
             this.tableLayoutPanel15.TabIndex = 3;
             // 
             // labelBsn4
@@ -540,7 +604,7 @@ namespace ToolSolution
             this.listView1.HideSelection = false;
             this.listView1.Location = new System.Drawing.Point(3, 63);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(312, 715);
+            this.listView1.Size = new System.Drawing.Size(312, 547);
             this.listView1.TabIndex = 8;
             this.listView1.UseCompatibleStateImageBehavior = false;
             // 
@@ -550,7 +614,7 @@ namespace ToolSolution
             this.listView2.HideSelection = false;
             this.listView2.Location = new System.Drawing.Point(321, 63);
             this.listView2.Name = "listView2";
-            this.listView2.Size = new System.Drawing.Size(312, 715);
+            this.listView2.Size = new System.Drawing.Size(312, 547);
             this.listView2.TabIndex = 9;
             this.listView2.UseCompatibleStateImageBehavior = false;
             // 
@@ -560,8 +624,8 @@ namespace ToolSolution
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 95F));
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 60F));
-            this.tableLayoutPanel3.Controls.Add(this.labelTime, 2, 0);
             this.tableLayoutPanel3.Controls.Add(this.labelMes, 1, 0);
+            this.tableLayoutPanel3.Controls.Add(this.labelTime, 2, 0);
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
@@ -569,18 +633,6 @@ namespace ToolSolution
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel3.Size = new System.Drawing.Size(1274, 54);
             this.tableLayoutPanel3.TabIndex = 1;
-            // 
-            // labelTime
-            // 
-            this.labelTime.AutoSize = true;
-            this.labelTime.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelTime.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.labelTime.Location = new System.Drawing.Point(1217, 0);
-            this.labelTime.Name = "labelTime";
-            this.labelTime.Size = new System.Drawing.Size(54, 54);
-            this.labelTime.TabIndex = 0;
-            this.labelTime.Text = "0";
-            this.labelTime.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // labelMes
             // 
@@ -594,19 +646,28 @@ namespace ToolSolution
             this.labelMes.Text = "MES";
             this.labelMes.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // timer1
+            // labelTime
             // 
-            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            this.labelTime.AutoSize = true;
+            this.labelTime.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelTime.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.labelTime.Location = new System.Drawing.Point(1217, 0);
+            this.labelTime.Name = "labelTime";
+            this.labelTime.Size = new System.Drawing.Size(54, 54);
+            this.labelTime.TabIndex = 0;
+            this.labelTime.Text = "0";
+            this.labelTime.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1280, 847);
+            this.ClientSize = new System.Drawing.Size(1280, 679);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Enabled = false;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Form1";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.Load += new System.EventHandler(this.Form1_Load);
@@ -645,12 +706,8 @@ namespace ToolSolution
         }
 
         #endregion
-
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Timer timer1;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
-        private System.Windows.Forms.Label labelTime;
-        private System.Windows.Forms.Label labelMes;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.ListView listView4;
         private System.Windows.Forms.ListView listView3;
@@ -659,31 +716,38 @@ namespace ToolSolution
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
         private System.Windows.Forms.Label labelfail1;
         private System.Windows.Forms.Label labelpass1;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel8;
+        private System.Windows.Forms.Label labelBsn1;
+        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel12;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel9;
+        private System.Windows.Forms.Label labelBsn2;
         private System.Windows.Forms.Label statuslabel2;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
         private System.Windows.Forms.Label labelfail2;
         private System.Windows.Forms.Label labelpass2;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel13;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel10;
+        private System.Windows.Forms.Label labelBsn3;
         private System.Windows.Forms.Label statuslabel3;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel6;
         private System.Windows.Forms.Label labelfail3;
         private System.Windows.Forms.Label labelpass3;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel14;
+        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel15;
+        private System.Windows.Forms.Label labelBsn4;
         private System.Windows.Forms.Label statuslabel4;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel7;
         private System.Windows.Forms.Label labelfail4;
         private System.Windows.Forms.Label labelpass4;
         private System.Windows.Forms.ListView listView1;
         private System.Windows.Forms.ListView listView2;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel8;
-        private System.Windows.Forms.Label labelBsn1;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel9;
-        private System.Windows.Forms.Label labelBsn2;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel10;
-        private System.Windows.Forms.Label labelBsn3;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel15;
-        private System.Windows.Forms.Label labelBsn4;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
+        private System.Windows.Forms.Label labelMes;
+        private System.Windows.Forms.Label labelTime;
     }
 }
 

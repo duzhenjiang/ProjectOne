@@ -106,6 +106,7 @@ namespace ToolSolution.Addins.Config
 		public string sProject;
 		public string sStation;
 		public int iDutNum;
+		public bool bScan;
 
 		public string LogPath;
 
@@ -136,6 +137,7 @@ namespace ToolSolution.Addins.Config
 			m_mainConfig.sProject = m_Mainini.ReadString("UI","Project","Jason");
 			m_mainConfig.sStation = m_Mainini.ReadString("UI", "Station", "Test");
 			m_mainConfig.iDutNum = m_Mainini.ReadInt("UI","DutNum",1);
+			m_mainConfig.bScan = m_Mainini.ReadInt("UI", "ScanEnable", 1) == 1;
 
 			//Main Test
 			m_mainConfig.LogPath = m_Mainini.ReadString("TEST", "LogPath", "D:\\TestLog");

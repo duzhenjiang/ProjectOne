@@ -76,6 +76,11 @@ namespace ToolSolution.Addins
             return m_con.GetMainPara().MesOn;
         }
 
+        public bool GetScanEnable()
+        {
+            return m_con.GetMainPara().bScan;
+        }
+
         /// <summary>
         /// 获取ComNum
         /// </summary>

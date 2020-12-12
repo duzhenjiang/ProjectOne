@@ -23,6 +23,18 @@ namespace ToolSolution
             }
         }
 
+        private void tabControl1_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            string sDut = this.tabControl1.SelectedTab.Text;
+            string strLogPath = sLogPath +
+                @"\" + sDut +
+                @"\" + sProject +
+                @"\" + sStation +
+                @"\" + DateTime.Now.ToString("M") +
+                @"\" + (iMesStatus == 1 ? "Online" : "Offline");
+            System.Diagnostics.Process.Start("explorer.exe", strLogPath);
+        }
+
         /// <summary>
         /// 初始化ListView
         /// </summary>
@@ -58,18 +70,6 @@ namespace ToolSolution
             listViews[iDut].Items.Add(listVItem);
             listViews[iDut].EnsureVisible(listViews[iDut].Items.Count - 1);
             listViews[iDut].EndUpdate();
-        }
-
-        private void tabControl1_MouseDoubleClick(object sender, MouseEventArgs e)
-        {
-            string sDut = this.tabControl1.SelectedTab.Text;
-            string strLogPath = sLogPath +
-                @"\" + sDut +
-                @"\" + sProject +
-                @"\" + sStation +
-                @"\" + DateTime.Now.ToString("M") +
-                @"\" + (iMesStatus == 1 ? "Online" : "Offline");
-            System.Diagnostics.Process.Start("explorer.exe", strLogPath);
         }
     }
 }
