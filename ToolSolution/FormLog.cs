@@ -8,15 +8,20 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace ProjectOne
+using Addins;
+
+namespace ToolSolution
 {
     public partial class FormLog : Form
     {
         public ListView[] listViews = new ListView[4];
+        public string sLogPath;
+        public string sProject;
+        public string sStation;
+        public int iMesStatus;
         public FormLog()
         {
             InitializeComponent();
-            this.ControlBox = false;
             listViews[0] = this.listView1;
             listViews[1] = this.listView2;
             listViews[2] = this.listView3;
@@ -60,6 +65,18 @@ namespace ProjectOne
             listViews[iDut].Items.Add(listVItem);
             listViews[iDut].EnsureVisible(listViews[iDut].Items.Count - 1);
             listViews[iDut].EndUpdate();
+        }
+
+        private void tabControl1_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            string sDut = this.tabControl1.SelectedTab.Text;
+            string strLogPath = sLogPath +
+                @"\" + sDut +
+                @"\" + sProject +
+                @"\" + sStation +
+                @"\" + DateTime.Now.ToString("M") +
+                @"\" + (iMesStatus == 1 ? "Online" : "Offline");
+            System.Diagnostics.Process.Start("explorer.exe", strLogPath);
         }
     }
 }

@@ -1,12 +1,12 @@
 ﻿
-namespace ProjectOne
+namespace ToolSolution
 {
     partial class FormLog
     {
         /// <summary>
         /// Required designer variable.
         /// </summary>
-        private System.ComponentModel.IContainer components = null;
+        //private System.ComponentModel.IContainer components = null;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -14,11 +14,12 @@ namespace ProjectOne
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
-            base.Dispose(disposing);
+            Hide();
+            //if (disposing && (components != null))
+            //{
+            //    components.Dispose();
+            //}
+            //base.Dispose(disposing);
         }
 
         #region Windows Form Designer generated code
@@ -57,6 +58,7 @@ namespace ProjectOne
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(1197, 554);
             this.tabControl1.TabIndex = 0;
+            this.tabControl1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.tabControl1_MouseDoubleClick);
             // 
             // tabPage1
             // 
@@ -85,7 +87,7 @@ namespace ProjectOne
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(792, 424);
+            this.tabPage2.Size = new System.Drawing.Size(1189, 528);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "DUT2";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -96,7 +98,7 @@ namespace ProjectOne
             this.listView2.HideSelection = false;
             this.listView2.Location = new System.Drawing.Point(3, 3);
             this.listView2.Name = "listView2";
-            this.listView2.Size = new System.Drawing.Size(786, 418);
+            this.listView2.Size = new System.Drawing.Size(1183, 522);
             this.listView2.TabIndex = 2;
             this.listView2.UseCompatibleStateImageBehavior = false;
             // 
@@ -106,7 +108,7 @@ namespace ProjectOne
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(792, 424);
+            this.tabPage3.Size = new System.Drawing.Size(1189, 528);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "DUT3";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -117,7 +119,7 @@ namespace ProjectOne
             this.listView3.HideSelection = false;
             this.listView3.Location = new System.Drawing.Point(3, 3);
             this.listView3.Name = "listView3";
-            this.listView3.Size = new System.Drawing.Size(786, 418);
+            this.listView3.Size = new System.Drawing.Size(1183, 522);
             this.listView3.TabIndex = 2;
             this.listView3.UseCompatibleStateImageBehavior = false;
             // 
@@ -127,7 +129,7 @@ namespace ProjectOne
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(792, 424);
+            this.tabPage4.Size = new System.Drawing.Size(1189, 528);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "DUT4";
             this.tabPage4.UseVisualStyleBackColor = true;
@@ -138,7 +140,7 @@ namespace ProjectOne
             this.listView4.HideSelection = false;
             this.listView4.Location = new System.Drawing.Point(3, 3);
             this.listView4.Name = "listView4";
-            this.listView4.Size = new System.Drawing.Size(786, 418);
+            this.listView4.Size = new System.Drawing.Size(1183, 522);
             this.listView4.TabIndex = 2;
             this.listView4.UseCompatibleStateImageBehavior = false;
             // 

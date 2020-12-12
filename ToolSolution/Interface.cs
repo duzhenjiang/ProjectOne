@@ -8,7 +8,7 @@ using System.Windows.Forms;
 using Addins.Config;
 using Addins.Port;
 using Addins.Adb;
-using ProjectOne;
+using ToolSolution;
 
 namespace Addins
 {
@@ -43,7 +43,7 @@ namespace Addins
         /// 获取Project
         /// </summary>
         /// <returns></returns>
-        public string GetProjet()
+        public string GetProject()
         {
             return m_con.GetMainPara().sProject;
         }
