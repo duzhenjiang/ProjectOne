@@ -58,7 +58,7 @@ namespace ToolSolution
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(1197, 554);
             this.tabControl1.TabIndex = 0;
-            this.tabControl1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.tabControl1_MouseDoubleClick);
+            this.tabControl1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.TabControl1_MouseDoubleClick);
             // 
             // tabPage1
             // 

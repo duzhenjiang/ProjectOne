@@ -13,7 +13,7 @@ namespace ToolSolution
     {
         readonly FormLog m_formlog = new FormLog();
         readonly Interface m_intface = new Interface();
-        FormScan m_formscan = new FormScan();
+        readonly FormScan m_formscan = new FormScan();
 
         public string Version = "V1.0.0";
         public int iNowDut;
@@ -151,13 +151,7 @@ namespace ToolSolution
             }
         }
 
-        //private void labelMes_MouseHover(object sender, EventArgs e)
-        //{
-        //    string sExePath = Environment.CurrentDirectory;
-        //    System.Diagnostics.Process.Start("explorer.exe", sExePath);
-        //}
-
-        private void timer1_Tick(object sender, EventArgs e)
+        private void Timer1_Tick(object sender, EventArgs e)
         {
             TimeCount += 1;
             labelTime.Text = TimeCount.ToString();

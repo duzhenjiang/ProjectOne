@@ -23,7 +23,7 @@ namespace ToolSolution
             }
         }
 
-        private void tabControl1_MouseDoubleClick(object sender, MouseEventArgs e)
+        private void TabControl1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             string sDut = this.tabControl1.SelectedTab.Text;
             string strLogPath = sLogPath +

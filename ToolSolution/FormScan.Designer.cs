@@ -39,7 +39,6 @@ namespace ToolSolution
             this.textBoxScan.Name = "textBoxScan";
             this.textBoxScan.Size = new System.Drawing.Size(183, 42);
             this.textBoxScan.TabIndex = 0;
-            this.textBoxScan.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBoxScan_KeyDown);
             // 
             // FormScan
             // 
@@ -54,6 +53,7 @@ namespace ToolSolution
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "FormScan";
+            this.TopMost = true;
             this.Load += new System.EventHandler(this.FormScan_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

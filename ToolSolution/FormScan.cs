@@ -23,20 +23,6 @@ namespace ToolSolution
         public FormScan()
         {
             InitializeComponent();
-            TopMost = true;
-        }
-
-        private void textBoxScan_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
-            {
-                //iNowDut = 0;
-                //sText = this.textBoxScan.Text;
-                //Thread Test = new Thread(new ThreadStart(MainTest));
-                //Test.Start();
-                //Hide();
-                //Thread.Sleep(100);
-            }
         }
 
         private void FormScan_Load(object sender, EventArgs e)
