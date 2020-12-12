@@ -56,6 +56,7 @@
   <ItemGroup>
     <Compile Include="Addins\ADBHelper.cs" />
     <Compile Include="Addins\ConfigFile.cs" />
+    <Compile Include="Addins\MesHelper.cs" />
     <Compile Include="Addins\NFCHelper.cs" />
     <Compile Include="Addins\PortDetect.cs" />
     <Compile Include="Addins\SerialHelper.cs" />
@@ -90,6 +91,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="..\.editorconfig">
+      <Link>.editorconfig</Link>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

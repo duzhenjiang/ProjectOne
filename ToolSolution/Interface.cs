@@ -1,22 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using Addins.Config;
-using Addins.Port;
-using Addins.Adb;
-using ToolSolution;
+using ToolSolution.Addins.Config;
+using ToolSolution.Addins.Port;
+using ToolSolution.Addins.Adb;
+using ToolSolution.Addins.NFC;
 
-namespace Addins
+namespace ToolSolution.Addins
 {
     public class Interface
     {
         readonly ConfigParser m_con = new ConfigParser(Application.StartupPath + "\\Main.ini");
-        PortDetect m_port = new PortDetect();
-        FormLog formLog = new FormLog();
+        readonly PortDetect m_port = new PortDetect();
+        readonly ADBHelper m_adb = new ADBHelper();
+        readonly NFCHelper m_nfc = new NFCHelper();
+
+        /////Port/////
 
         /// <summary>
         /// 搜索端口
@@ -29,6 +28,8 @@ namespace Addins
             m_port.GetPort(bApper, iDut);
             return true;
         }
+
+        /////Config/////
 
         /// <summary>
         /// 获取DutNum
@@ -93,6 +94,45 @@ namespace Addins
         public string GetDeviceID(int iDut)
         {
             return m_con.GetDutPara(Application.StartupPath + "\\Dut.ini", iDut).sDeviceID;
+        }
+
+        /////ADB/////
+
+        /// <summary>
+        /// adb接口
+        /// </summary>
+        /// <param name="i">i</param>
+        /// <param name="sCmd">命令</param>
+        /// <param name="sResp">返回</param>
+        /// <param name="bOutput"></param>
+        public void ADBInterface(int i, string sCmd, out string sResp, bool bOutput = true)
+        {
+            if (GetDutNum() > 1)
+            {
+                sCmd = string.Format("-s {0} {1}", GetDeviceID(i), sCmd);
+            }
+            m_adb.ADBCommend(sCmd, out sResp, bOutput);
+        }
+
+        /////NFC/////
+        
+        /// <summary>
+        /// NFC INIT
+        /// </summary>
+        /// <returns>句柄</returns>
+        public uint NFC_Init()
+        {
+            return m_nfc.BS_dc_init(100, 11500);
+        }
+
+        /// <summary>
+        /// NFC TEST
+        /// </summary>
+        /// <param name="Handle">句柄</param>
+        /// <returns></returns>
+        public int NFC_Test(uint Handle)
+        {
+            return m_nfc.BS_dc_test(Handle);
         }
     }
 }

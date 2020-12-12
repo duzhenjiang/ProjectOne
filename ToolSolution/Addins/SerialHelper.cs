@@ -1,24 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.IO.Ports;
 
-namespace Addins.Serial
+namespace ToolSolution.Addins.Serial
 {
     class SerialHelper
     {
         public void SerialComment(string sPort, byte[] bCmd, out byte[] bResp)
         {
-            SerialPort serialPort = new SerialPort();
-            serialPort.WriteTimeout = 5000;
-            serialPort.ReadTimeout = 5000;
-            serialPort.PortName = sPort;
-            serialPort.BaudRate = 9600;
-            serialPort.DataBits = 8;
-            serialPort.StopBits = StopBits.One;
-            serialPort.Parity = Parity.None;
+            SerialPort serialPort = new SerialPort
+            {
+                WriteTimeout = 5000,
+                ReadTimeout = 5000,
+                PortName = sPort,
+                BaudRate = 9600,
+                DataBits = 8,
+                StopBits = StopBits.One,
+                Parity = Parity.None
+            };
 
             if (!serialPort.IsOpen)
             {

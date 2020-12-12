@@ -1,24 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
-using Addins;
-using Addins.Adb;
-using Addins.NFC;
+using ToolSolution.Addins;
 
 namespace ToolSolution
 {
     public partial class Form1 : Form
     {
-        FormLog m_formlog = new FormLog();
-        Interface m_intface = new Interface();
+        readonly FormLog m_formlog = new FormLog();
+        readonly Interface m_intface = new Interface();
 
         public string Version = "V1.0.0";
         public int iNowDut;
@@ -132,6 +126,7 @@ namespace ToolSolution
                     Thread.Sleep(100);
                 }
             }
+            KillProcess("adb");
 
             Environment.Exit(0);
         }
@@ -268,8 +263,10 @@ namespace ToolSolution
         {
             listV.BeginUpdate();
 
-            ListViewItem listVItem = new ListViewItem();
-            listVItem.Text = (listV.Items.Count + 1).ToString();
+            ListViewItem listVItem = new ListViewItem
+            {
+                Text = (listV.Items.Count + 1).ToString()
+            };
             listVItem.SubItems.Add(sTestItem);
             listVItem.SubItems.Add(sValue);
             listVItem.SubItems.Add(sUp);
@@ -706,14 +703,9 @@ namespace ToolSolution
         /// <param name="sCmd">命令</param>
         /// <param name="sResp">返回</param>
         /// <param name="bOutput"></param>
-        private void ADBCommon(int i, string sCmd, out string sResp, bool bOutput = true)
+        public void ADBCommon(int i, string sCmd, out string sResp, bool bOutput = true)
         {
-            ADBHelper m_adb = new ADBHelper();
-            if (m_intface.GetDutNum() > 1)
-            {
-                sCmd = string.Format("-s {0} {1}", m_intface.GetDeviceID(i), sCmd);
-            }
-            m_adb.ADBCommend(sCmd, out sResp, bOutput);
+            m_intface.ADBInterface(i, sCmd, out sResp, bOutput);
             m_formlog.InsertListView(i, "adb " + sCmd);
             m_formlog.InsertListView(i, sResp);
         }
@@ -724,9 +716,9 @@ namespace ToolSolution
         /// <param name="i"></param>
         private void DevcieInit(int i)
         {
-            ADBCommon(i, "devices", out string sResp);
-            ADBCommon(i, "root", out sResp);
-            ADBCommon(i, "remount", out sResp);
+            ADBCommon(i, "devices", out _);
+            ADBCommon(i, "root", out _);
+            ADBCommon(i, "remount", out _);
         }
 
         /// <summary>
@@ -736,10 +728,9 @@ namespace ToolSolution
         /// <returns></returns>
         private string GetPhoneBSN(int i)
         {
-            string BSN;
-            for (int j=0; j<50; j++)
+            for (int j = 0; j < 50; j++)
             {
-                ADBCommon(i, "shell bs_nvops rd 2497 0 12", out BSN);
+                ADBCommon(i, "shell bs_nvops rd 2497 0 12", out string BSN);
                 if (BSN != "\r\n" && BSN.Length >= 12)
                 {
                     BSN = BSN.Substring((BSN.Length - 14), 12);
@@ -825,12 +816,11 @@ namespace ToolSolution
         /// <returns></returns>
         private bool NFCD8Test(int i)
         {
-            NFCHelper m_nfc = new NFCHelper();
-            uint NfcHandle;
+            uint NfcHandle = 0;
             int j;
             for (j=0; j < 5; j++)
             {
-                NfcHandle = m_nfc.BS_dc_init(100, 11500);
+                NfcHandle = m_intface.NFC_Init();
                 if (NfcHandle <= 0)
                 {
                     m_formlog.InsertListView(i, "D8_Init fail!");
@@ -850,7 +840,7 @@ namespace ToolSolution
 
             for (j = 0; j < 10; j++)
             {
-                if (m_nfc.BS_dc_test() != 1)
+                if (m_intface.NFC_Test(NfcHandle) != 1)
                 {
                     m_formlog.InsertListView(i, "D8_Test fail!");
                     Thread.Sleep(1000);

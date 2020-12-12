@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Management;
-using System.Windows.Forms;
 
-namespace Addins.Port
+namespace ToolSolution.Addins.Port
 {
     class PortDetect
     {
@@ -143,7 +142,6 @@ namespace Addins.Port
             }
             finally
             {
-                strs = null;
             }
         }
     }

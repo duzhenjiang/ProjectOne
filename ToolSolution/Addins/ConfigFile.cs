@@ -4,7 +4,7 @@ using System.Text;
 using System.IO;
 using System.Windows.Forms;
 
-namespace Addins.Config
+namespace ToolSolution.Addins.Config
 {
 	public class ConfigFile
 	{
@@ -120,8 +120,8 @@ namespace Addins.Config
 
 	public class ConfigParser
 	{
-		private MainConfig m_mainConfig = new MainConfig();
-		private DutConfig m_dutConfig = new DutConfig();
+		private readonly MainConfig m_mainConfig = new MainConfig();
+		private readonly DutConfig m_dutConfig = new DutConfig();
 
 		/// <summary>
 		/// 构造函数

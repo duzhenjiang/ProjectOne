@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 
-namespace Addins.NFC
+namespace ToolSolution.Addins.NFC
 {
     class NFCHelper
     {
-		uint NfcHandle;
 		[DllImport("dcrf32.dll", SetLastError = true, CallingConvention = CallingConvention.StdCall)]
-		static extern uint dc_init(int port, Int32 baud);
+        static extern uint dc_init(int port, Int32 baud);
 
 		[DllImport("dcrf32.dll", SetLastError = true, CallingConvention = CallingConvention.StdCall)]
 		static extern Int16 dc_request(uint icdev, byte _Mode, ref uint TagType);
@@ -30,7 +26,7 @@ namespace Addins.NFC
 		/// <returns>句柄</returns>
 		public uint BS_dc_init(int port, Int32 baud)
 		{
-			NfcHandle = dc_init(port, baud);
+			uint NfcHandle = dc_init(port, baud);
 			return NfcHandle;
 		}
 
@@ -38,11 +34,11 @@ namespace Addins.NFC
         /// NFC D8测试
         /// </summary>
         /// <returns></returns>
-        public Int16 BS_dc_test()
+        public Int16 BS_dc_test(uint NfcHandle)
         {
             uint ttt = 0;
             StringBuilder sss = new StringBuilder(); ;
-            byte b = new byte();
+            byte b;
             b = 1;
 
             if (dc_request(NfcHandle, b, ref ttt) != 0)

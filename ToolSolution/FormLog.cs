@@ -1,14 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-
-using Addins;
 
 namespace ToolSolution
 {
@@ -44,7 +35,7 @@ namespace ToolSolution
             int width = listViews[iDut].ClientRectangle.Width;
 
             listViews[iDut].Columns.Add("Index", 45, HorizontalAlignment.Left);
-            listViews[iDut].Columns.Add("Date", 160, HorizontalAlignment.Left);
+            listViews[iDut].Columns.Add("Date", 155, HorizontalAlignment.Left);
             listViews[iDut].Columns.Add("Msg", (int)(width - 205), HorizontalAlignment.Left);
         }
 
@@ -57,8 +48,10 @@ namespace ToolSolution
         {
             listViews[iDut].BeginUpdate();
 
-            ListViewItem listVItem = new ListViewItem();
-            listVItem.Text = (listViews[iDut].Items.Count + 1).ToString();
+            ListViewItem listVItem = new ListViewItem
+            {
+                Text = (listViews[iDut].Items.Count + 1).ToString()
+            };
             listVItem.SubItems.Add(DateTime.Now.ToString("G") + " " + DateTime.Now.ToString("fff"));
             listVItem.SubItems.Add(Msg);
 
