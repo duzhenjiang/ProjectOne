@@ -47,7 +47,7 @@ namespace ToolSolution.Addins.Config
 			{
 				if (!File.Exists(this.sFilePath))
 				{
-					throw new Exception(this.sFilePath + "not exist!");
+					throw new Exception(this.sFilePath + " not exist!");
 				}
 			}
 			catch(Exception ex)

@@ -10,7 +10,7 @@ namespace ToolSolution.Addins
 {
     public class Interface
     {
-        readonly ConfigParser m_con = new ConfigParser(Application.StartupPath + "\\Main.ini");
+        readonly ConfigParser m_con = new ConfigParser(Application.StartupPath + "\\Config\\Main.ini");
         readonly PortDetect m_port = new PortDetect();
         readonly ADBHelper m_adb = new ADBHelper();
         readonly NFCHelper m_nfc = new NFCHelper();
@@ -88,7 +88,7 @@ namespace ToolSolution.Addins
         /// <returns></returns>
         public int GetComPort(int iDut)
         {
-            return m_con.GetDutPara(Application.StartupPath + "\\Dut.ini", iDut).iComNum;
+            return m_con.GetDutPara(Application.StartupPath + "\\Config\\Dut.ini", iDut).iComNum;
         }
 
         /// <summary>
@@ -98,7 +98,7 @@ namespace ToolSolution.Addins
         /// <returns></returns>
         public string GetDeviceID(int iDut)
         {
-            return m_con.GetDutPara(Application.StartupPath + "\\Dut.ini", iDut).sDeviceID;
+            return m_con.GetDutPara(Application.StartupPath + "\\Config\\Dut.ini", iDut).sDeviceID;
         }
 
         /////ADB/////
