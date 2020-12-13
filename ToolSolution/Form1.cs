@@ -365,8 +365,8 @@ namespace ToolSolution
         /// </summary>
         public void MainTest()
         {
-            BEGIN:
             int i = iNowDut;
+        BEGIN:
             bool bResult = true;
             try
             {
@@ -400,7 +400,6 @@ namespace ToolSolution
                 SaveLog(i, bResult);
                 m_intface.DetectPort(false, m_intface.GetComPort(i));
                 TestFinal(i);
-                iNowDut = i;
             }
             goto BEGIN;
         }
@@ -410,8 +409,8 @@ namespace ToolSolution
         /// </summary>
         public void NFCTest1()
         {
-            BEGIN:
             int i = iNowDut;
+        BEGIN:
             bool bResult = true;
             bOnlyOne = false;
             try
@@ -500,7 +499,6 @@ namespace ToolSolution
                 SaveLog(i, bResult);
                 m_intface.DetectPort(false, m_intface.GetComPort(i));
                 TestFinal(i);
-                iNowDut = i;
             }
             goto BEGIN;
         }
@@ -510,8 +508,8 @@ namespace ToolSolution
         /// </summary>
         public void NFCTest2()
         {
-            BEGIN:
             int i = iNowDut;
+        BEGIN:
             bool bResult = true;
             bOnlyOne = false;
             try
@@ -600,7 +598,6 @@ namespace ToolSolution
                 SaveLog(i, bResult);
                 m_intface.DetectPort(false, m_intface.GetComPort(i));
                 TestFinal(i);
-                iNowDut = i;
             }
             goto BEGIN;
         }
