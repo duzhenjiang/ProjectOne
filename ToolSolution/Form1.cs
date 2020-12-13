@@ -333,6 +333,7 @@ namespace ToolSolution
             endTimes[i] = DateTime.Now;
             string sTestTime = ((double)(endTimes[i] - beginTimes[i]).TotalMilliseconds / 1000).ToString("f2");
             InsertListView(listViews[i], "TestTime", sTestTime, "-", "-", true, "-");
+            KillProcess("adb");
         }
 
         /// <summary>
@@ -348,6 +349,7 @@ namespace ToolSolution
             endTimes[i] = DateTime.Now;
             string sTestTime = ((double)(endTimes[i] - beginTimes[i]).TotalMilliseconds / 1000).ToString("f2");
             InsertListView(listViews[i], "TestTime", sTestTime, "-", "-", true, "-");
+            KillProcess("adb");
         }
 
         /// <summary>
@@ -370,7 +372,6 @@ namespace ToolSolution
             bool bResult = true;
             try
             {
-                KillProcess("adb");
                 TestScan();
                 m_intface.DetectPort(true, m_intface.GetComPort(i));
                 TestBegin(i);
