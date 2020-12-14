@@ -5,6 +5,8 @@ using ToolSolution.Addins.Config;
 using ToolSolution.Addins.Port;
 using ToolSolution.Addins.Adb;
 using ToolSolution.Addins.NFC;
+using ToolSolution.Addins.Mes;
+using ToolSolution.Addins.QLIB;
 
 namespace ToolSolution.Addins
 {
@@ -14,9 +16,10 @@ namespace ToolSolution.Addins
         readonly PortDetect m_port = new PortDetect();
         readonly ADBHelper m_adb = new ADBHelper();
         readonly NFCHelper m_nfc = new NFCHelper();
+        readonly MesHelper m_mes = new MesHelper();
+        readonly QLIBHelper m_qlib = new QLIBHelper();
 
-        /////Port/////
-
+        #region Port
         /// <summary>
         /// 搜索端口
         /// </summary>
@@ -28,9 +31,30 @@ namespace ToolSolution.Addins
             m_port.GetPort(bApper, iDut);
             return true;
         }
+        #endregion
 
-        /////Config/////
+        #region QLIB
+        /// <summary>
+        /// 获得QLIB Handle
+        /// </summary>
+        /// <param name="i"></param>
+        public void GetQlibHandle(int i)
+        {
+            m_qlib.QlibHandle[i] = m_qlib.ConnectServer(GetComPort(i));
+        }
 
+        /// <summary>
+        /// 连接手机
+        /// </summary>
+        /// <param name="i"></param>
+        /// <returns></returns>
+        public bool ConnectPhone(int i)
+        {
+            return m_qlib.IsPhoneConnected(i);
+        }
+        #endregion
+
+        #region Config
         /// <summary>
         /// 获取DutNum
         /// </summary>
@@ -67,6 +91,11 @@ namespace ToolSolution.Addins
             return m_con.GetMainPara().LogPath;
         }
 
+        public string GetFlagType()
+        {
+            return m_con.GetMainPara().sFlagType;
+        }
+
         /// <summary>
         /// 获取MesStatus
         /// </summary>
@@ -76,6 +105,10 @@ namespace ToolSolution.Addins
             return m_con.GetMainPara().MesOn;
         }
 
+        /// <summary>
+        /// 获取Scan信息
+        /// </summary>
+        /// <returns></returns>
         public bool GetScanEnable()
         {
             return m_con.GetMainPara().bScan;
@@ -100,9 +133,53 @@ namespace ToolSolution.Addins
         {
             return m_con.GetDutPara(Application.StartupPath + "\\Config\\Dut.ini", iDut).sDeviceID;
         }
+        #endregion
 
-        /////ADB/////
+        #region MES
+        /// <summary>
+        /// MesInit
+        /// </summary>
+        public void MesInit()
+        {
+            if (GetMesStatus() == 1)
+            {
+                m_mes.MesInit();
+            }
+        }
 
+        /// <summary>
+        /// MesCheck
+        /// </summary>
+        /// <param name="i">i</param>
+        /// <param name="sParams"></param>
+        /// <param name="errMessage">错误信息</param>
+        /// <returns></returns>
+        public bool MesCheck(int i, string sParams, out string errMessage)
+        {
+            if (GetMesStatus() == 1)
+            {
+                return m_mes.MesCheck(i, sParams, out errMessage);
+            }
+            errMessage = "";
+            return true;
+        }
+
+        public bool MesUpdate(int i, bool bResult, out string errMessage)
+        {
+            return m_mes.MesUpdate(i, bResult, out errMessage);
+        }
+
+        /// <summary>
+        /// 获取测试结果文件路径
+        /// </summary>
+        /// <returns></returns>
+        public string GetResultPathName(int i)
+        {
+            return m_mes.m_szResultFileName[i];
+        }
+        #endregion
+
+        #region ADB
         /// <summary>
         /// adb接口
         /// </summary>
@@ -118,9 +195,9 @@ namespace ToolSolution.Addins
             }
             m_adb.ADBCommend(sCmd, out sResp, bOutput);
         }
+        #endregion
 
-        /////NFC/////
-        
+        #region NFC
         /// <summary>
         /// NFC INIT
         /// </summary>
@@ -139,5 +216,6 @@ namespace ToolSolution.Addins
         {
             return m_nfc.BS_dc_test(Handle);
         }
+        #endregion
     }
 }

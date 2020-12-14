@@ -109,6 +109,7 @@ namespace ToolSolution.Addins.Config
 		public bool bScan;
 
 		public string LogPath;
+		public string sFlagType;
 
 		public int MesOn;
 	}
@@ -141,6 +142,7 @@ namespace ToolSolution.Addins.Config
 
 			//Main Test
 			m_mainConfig.LogPath = m_Mainini.ReadString("TEST", "LogPath", "D:\\TestLog");
+			m_mainConfig.sFlagType = m_Mainini.ReadString("TEST", "Flag", "1");
 
 			//Main Mes
 			m_mainConfig.MesOn = m_Mainini.ReadInt("MES", "MesOn", 1);

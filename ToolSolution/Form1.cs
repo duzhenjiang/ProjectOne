@@ -15,6 +15,47 @@ namespace ToolSolution
         readonly Interface m_intface = new Interface();
         readonly FormScan m_formscan = new FormScan();
 
+        /// <summary>
+        /// 工站枚举
+        /// </summary>
+        public enum Station 
+        {
+            //单板
+            ED,
+            MBT,
+            CAL1,
+            CAL2,
+            RFT1,
+            RFT2,
+            WIFIBT,
+            BLMMI,
+            //整机
+            IDLE,
+            ALEAK1,
+            ALEAK2,
+            RUSPCT1,
+            MT,
+            CamCal,
+            DCam,
+            CamDis,
+            Cam1,
+            Cam2,
+            PRET,
+            ANT1,
+            ANT2,
+            AEC,
+            NFC,
+            RUNIN,
+            MT2,
+            RUSPCT2,
+            RAUD,
+            OLEDT,
+            KEY,
+            PDL,
+            MMI2,
+            CQR,
+        }
+
         public string Version = "V1.0.0";
         public int iNowDut;
         public int TimeCount = 0;
@@ -49,6 +90,8 @@ namespace ToolSolution
         private void Form1_Load(object sender, EventArgs e)
         {
             InitUI();
+
+            m_intface.MesInit();
 
             if (m_intface.GetStation() == "NFC")
             {
@@ -97,6 +140,7 @@ namespace ToolSolution
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
             m_formlog.Close();
+            KillProcess("adb");
             Thread.Sleep(1000);
             if (m_intface.GetStation() == "NFC")
             {
@@ -131,7 +175,6 @@ namespace ToolSolution
                     Thread.Sleep(100);
                 }
             }
-            KillProcess("adb");
 
             Environment.Exit(0);
         }
@@ -246,12 +289,12 @@ namespace ToolSolution
 
             int width = listV.ClientRectangle.Width;
 
-            listV.Columns.Add("Index", (int)(width * 0.08), HorizontalAlignment.Left);
-            listV.Columns.Add("TestItem", (int)(width * 0.25), HorizontalAlignment.Left);
-            listV.Columns.Add("Value", (int)(width * 0.15), HorizontalAlignment.Left);
-            listV.Columns.Add("Up", (int)(width * 0.15), HorizontalAlignment.Left);
-            listV.Columns.Add("Low", (int)(width * 0.15), HorizontalAlignment.Left);
-            listV.Columns.Add("Result", (int)(width * 0.12), HorizontalAlignment.Left);
+            listV.Columns.Add("Index", (int)(width * 0.07), HorizontalAlignment.Left);
+            listV.Columns.Add("TestItem", (int)(width * 0.20), HorizontalAlignment.Left);
+            listV.Columns.Add("Value", (int)(width * 0.35), HorizontalAlignment.Left);
+            listV.Columns.Add("Up", (int)(width * 0.10), HorizontalAlignment.Left);
+            listV.Columns.Add("Low", (int)(width * 0.10), HorizontalAlignment.Left);
+            listV.Columns.Add("Result", (int)(width * 0.08), HorizontalAlignment.Left);
             listV.Columns.Add("Time", (int)(width * 0.1),HorizontalAlignment.Left);
         }
 
@@ -333,7 +376,6 @@ namespace ToolSolution
             endTimes[i] = DateTime.Now;
             string sTestTime = ((double)(endTimes[i] - beginTimes[i]).TotalMilliseconds / 1000).ToString("f2");
             InsertListView(listViews[i], "TestTime", sTestTime, "-", "-", true, "-");
-            KillProcess("adb");
         }
 
         /// <summary>
@@ -349,7 +391,6 @@ namespace ToolSolution
             endTimes[i] = DateTime.Now;
             string sTestTime = ((double)(endTimes[i] - beginTimes[i]).TotalMilliseconds / 1000).ToString("f2");
             InsertListView(listViews[i], "TestTime", sTestTime, "-", "-", true, "-");
-            KillProcess("adb");
         }
 
         /// <summary>
@@ -360,6 +401,8 @@ namespace ToolSolution
         {
             labels[i].Text = "WAIT";
             labels[i].BackColor = Color.Gray;
+            labelbsns[i].Text = "";
+            KillProcess("adb");
         }
 
         /// <summary>
@@ -370,14 +413,18 @@ namespace ToolSolution
             int i = iNowDut;
         BEGIN:
             bool bResult = true;
+            bool bMesCheckRes = false;
             try
             {
                 TestScan();
                 m_intface.DetectPort(true, m_intface.GetComPort(i));
                 TestBegin(i);
 
+                m_intface.GetQlibHandle(i);
+                m_intface.ConnectPhone(i);
+
                 DevcieInit(i);//设备初始化
-                InsertListView(listViews[i], "InitDevice", "-", "-", "-", true, GetTestTime(i));
+                InsertListView(listViews[i], "InitDevice", "P", "-", "-", true, GetTestTime(i));
 
                 BSN[i] = GetPhoneBSN(i);
                 if (BSN[i] == "")
@@ -387,13 +434,37 @@ namespace ToolSolution
                 }
                 InsertListView(listViews[i], "GetPhoneBSN", BSN[i], "-", "-", true, GetTestTime(i));
 
+                if (!ReadFlagOperate(i, (int)Station.NFC))
+                {
+                    InsertListView(listViews[i], "ReadAECFlag", "-", "-", "-", false, GetTestTime(i));
+                    throw new Exception("Read AEC Flag Fail!");
+                }
+                InsertListView(listViews[i], "ReadAECFlag", "P", "-", "-", true, GetTestTime(i));
+
+                bMesCheckRes = m_intface.MesCheck(i, BSN[i], out string errMessage);
+                if (!bMesCheckRes)
+                {
+                    InsertListView(listViews[i], "MesCheck", errMessage, "-", "-", false, GetTestTime(i));
+                    m_formlog.InsertListView(i, errMessage);
+                    throw new Exception("Mes Check Fail!");
+                }
+                InsertListView(listViews[i], "MesCheck", "P", "-", "-", true, GetTestTime(i));
+
+                if (!WriteFlagOperate(i, (int)Station.NFC))
+                {
+                    InsertListView(listViews[i], "WriteNFCFlag", "-", "-", "-", false, GetTestTime(i));
+                    throw new Exception("Write NFC Flag Fail!");
+                }
+                InsertListView(listViews[i], "WriteNFCFlag", "P", "-", "-", true, GetTestTime(i));
                 //Final
+                ResultUpdate(i, bMesCheckRes, bResult);
                 TestPassEnd(i);
             }
             catch (Exception ex)
             {
-                TestFailEnd(i);
                 bResult = false;
+                ResultUpdate(i,bMesCheckRes,bResult);
+                TestFailEnd(i);
                 m_formlog.InsertListView(i, ex.Message);
             }
             finally
@@ -413,6 +484,7 @@ namespace ToolSolution
             int i = iNowDut;
         BEGIN:
             bool bResult = true;
+            bool bMesCheckRes = false;
             bOnlyOne = false;
             try
             {
@@ -430,6 +502,22 @@ namespace ToolSolution
                     throw new Exception("Get BSN Fail!");
                 }
                 InsertListView(listViews[i], "GetPhoneBSN", BSN[i], "-", "-", true, GetTestTime(i));
+
+                if (!ReadFlagOperate(i, (int)Station.NFC))
+                {
+                    InsertListView(listViews[i], "ReadNFCFlag", "-", "-", "-", false, GetTestTime(i));
+                    throw new Exception("Read NFC Flag Fail!");
+                }
+                InsertListView(listViews[i], "ReadNFCFlag", "P", "-", "-", true, GetTestTime(i));
+
+                bMesCheckRes = m_intface.MesCheck(i, BSN[i], out string errMessage);
+                if (!bMesCheckRes)
+                {
+                    InsertListView(listViews[i], "MesCheck", errMessage, "-", "-", false, GetTestTime(i));
+                    m_formlog.InsertListView(i, errMessage);
+                    throw new Exception("Mes Check Fail!");
+                }
+                InsertListView(listViews[i], "MesCheck", "P", "-", "-", true, GetTestTime(i));
 
                 if (!CloseNFC(i))
                 {
@@ -485,13 +573,21 @@ namespace ToolSolution
                 }
                 bTest1 = false;
 
+                if (!WriteFlagOperate(i, (int)Station.NFC))
+                {
+                    InsertListView(listViews[i], "WriteNFCFlag", "-", "-", "-", false, GetTestTime(i));
+                    throw new Exception("Write NFC Flag Fail!");
+                }
+                InsertListView(listViews[i], "WriteNFCFlag", "P", "-", "-", true, GetTestTime(i));
                 //Final
+                ResultUpdate(i, bMesCheckRes, bResult);
                 TestPassEnd(i);
             }
             catch (Exception ex)
             {
-                TestFailEnd(i);
                 bResult = false;
+                ResultUpdate(i, bMesCheckRes, bResult);
+                TestFailEnd(i);
                 bOnlyOne = true;
                 m_formlog.InsertListView(i, ex.Message);
             }
@@ -512,6 +608,7 @@ namespace ToolSolution
             int i = iNowDut;
         BEGIN:
             bool bResult = true;
+            bool bMesCheckRes = false;
             bOnlyOne = false;
             try
             {
@@ -529,6 +626,22 @@ namespace ToolSolution
                     throw new Exception("Get BSN Fail!");
                 }
                 InsertListView(listViews[i], "GetPhoneBSN", BSN[i], "-", "-", true, GetTestTime(i));
+
+                if (!ReadFlagOperate(i, (int)Station.NFC))
+                {
+                    InsertListView(listViews[i], "ReadNFCFlag", "-", "-", "-", false, GetTestTime(i));
+                    throw new Exception("Read NFC Flag Fail!");
+                }
+                InsertListView(listViews[i], "ReadNFCFlag", "P", "-", "-", true, GetTestTime(i));
+
+                bMesCheckRes = m_intface.MesCheck(i, BSN[i], out string errMessage);
+                if (!bMesCheckRes)
+                {
+                    InsertListView(listViews[i], "MesCheck", errMessage, "-", "-", false, GetTestTime(i));
+                    m_formlog.InsertListView(i, errMessage);
+                    throw new Exception("Mes Check Fail!");
+                }
+                InsertListView(listViews[i], "MesCheck", "P", "-", "-", true, GetTestTime(i));
 
                 if (!CloseNFC(i))
                 {
@@ -584,13 +697,21 @@ namespace ToolSolution
                 }
                 bTest2 = false;
 
+                if (!WriteFlagOperate(i, (int)Station.NFC))
+                {
+                    InsertListView(listViews[i], "WriteNFCFlag", "-", "-", "-", false, GetTestTime(i));
+                    throw new Exception("Write NFC Flag Fail!");
+                }
+                InsertListView(listViews[i], "WriteNFCFlag", "P", "-", "-", true, GetTestTime(i));
                 //Final
+                ResultUpdate(i, bMesCheckRes, bResult);
                 TestPassEnd(i);
             }
             catch (Exception ex)
             {
-                TestFailEnd(i);
                 bResult = false;
+                ResultUpdate(i, bMesCheckRes, bResult);
+                TestFailEnd(i);
                 bOnlyOne = true;
                 m_formlog.InsertListView(i, ex.Message);
             }
@@ -656,9 +777,6 @@ namespace ToolSolution
                     }
                     sw.WriteLine(sb);
                 }
-                StringBuilder sb1 = new StringBuilder();
-                sb1.Append("IS_PASSED=" + (bResult == true ? "1" : "0"));
-                sw.WriteLine(sb1);
                 sw.Flush();
                 sw.Close();
                 fs.Close();
@@ -682,6 +800,59 @@ namespace ToolSolution
                 sw.Flush();
                 sw.Close();
                 fs.Close();
+            }
+        }
+        
+        /// <summary>
+        /// 测试结果上传
+        /// </summary>
+        /// <param name="iDut">i</param>
+        /// <param name="bCheck">MesCheck测试结果</param>
+        /// <param name="bResult">测试结果</param>
+        private void ResultUpdate(int iDut, bool bCheck, bool bResult)
+        {
+            if (m_intface.GetMesStatus()==1 && bCheck)
+            {
+                string strMesLogPath = m_intface.GetResultPathName(iDut);
+                if (!File.Exists(strMesLogPath))
+                {
+                    FileStream fs = new FileStream(strMesLogPath, FileMode.Create, FileAccess.Write);
+                    File.SetAttributes(strMesLogPath, FileAttributes.Normal);
+                    StreamWriter sw = new StreamWriter(fs);
+                    for (int i = 0; i < listViews[iDut].Items.Count; i++)
+                    {
+                        StringBuilder sb = new StringBuilder();
+                        sb.Append("TEST_ITEM_" + String.Format("{0:00}", (i + 1)) + "=");
+                        for (int j = 1; j < listViews[iDut].Items[i].SubItems.Count - 1; j++)
+                        {
+                            if (j == 1)
+                            {
+                                sb.Append(listViews[iDut].Items[i].SubItems[j].Text).Append("^").Append(listViews[iDut].Items[i].SubItems[j].Text).Append("^");
+                            }
+                            else if (j == listViews[iDut].Items[i].SubItems.Count - 2)
+                            {
+                                sb.Append(listViews[iDut].Items[i].SubItems[j].Text).Append("^").Append("1");
+                            }
+                            else
+                            {
+                                sb.Append(listViews[iDut].Items[i].SubItems[j].Text).Append("^");
+                            }
+                        }
+                        sw.WriteLine(sb);
+                    }
+                    sw.Flush();
+                    sw.Close();
+                    fs.Close();
+                }
+                if (!m_intface.MesUpdate(iDut, bResult, out string errMessage))
+                {
+                    InsertListView(listViews[iDut], "MesUpdate", errMessage, "-", "-", false, GetTestTime(iDut));
+                    m_formlog.InsertListView(iDut, errMessage);
+                }
+                else
+                {
+                    InsertListView(listViews[iDut], "MesUpdate", "P", "-", "-", true, GetTestTime(iDut));
+                }
             }
         }
 
@@ -781,9 +952,66 @@ namespace ToolSolution
                     this.labelbsns[i].Text = BSN;
                     return BSN;
                 }
-                Thread.Sleep(100);
+                Thread.Sleep(1000);
             }
             return "";
+        }
+
+        /// <summary>
+        /// 读标志位
+        /// </summary>
+        /// <param name="i"></param>
+        /// <param name="iStation">工位</param>
+        /// <returns></returns>
+        private bool ReadFlagOperate(int i, int iStation)
+        {
+            string sCmd = "shell bs_nvops rd 2498 " + (iStation - 1).ToString() + " 1";
+            for (int j = 0; j < 5; j++) 
+            {
+                if (m_intface.GetFlagType() == "1" || m_intface.GetFlagType().ToUpper() == "R") 
+                {
+                    ADBCommon(i, sCmd, out string sResp);
+                    if (sResp != "\r\n")
+                    {
+                        int pos = sResp.IndexOf("the data is");
+                        if (sResp.Substring(pos + 12, 1).IndexOf("P") != -1)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 写标志位
+        /// </summary>
+        /// <param name="i"></param>
+        /// <param name="iStation">工位</param>
+        /// <param name="bResult">测试结果</param>
+        /// <returns></returns>
+        private bool WriteFlagOperate(int i, int iStation)
+        {
+            string sCmd1 = "shell bs_nvops wt 2498 " + (iStation).ToString() + " P";
+            string sCmd2 = "shell bs_nvops rd 2498 " + (iStation).ToString() + " 1";
+            for (int j = 0; j < 5; j++)
+            {
+                if (m_intface.GetFlagType() == "1" || m_intface.GetFlagType().ToUpper() == "W")
+                {
+                    ADBCommon(i, sCmd1, out _);
+                    ADBCommon(i, sCmd2, out string sResp);
+                    if (sResp != "\r\n")
+                    {
+                        int pos = sResp.IndexOf("the data is");
+                        if (sResp.Substring(pos + 12, 1).IndexOf("P") != -1)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
         }
 
         /// <summary>
