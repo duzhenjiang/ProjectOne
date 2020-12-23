@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Text;
 
-namespace ToolSolution.Addins.Mes
+namespace MesHelper
 {
-    class MesHelper
+    public class Mes
     {
         readonly string kWIPHandleFileName = "C:\\eBook_Test\\Handle.txt";
         readonly string[] kWIPNOFileName = new string[4];
@@ -30,7 +30,7 @@ namespace ToolSolution.Addins.Mes
         /// </summary>
         public void MesInit()
         {
-            try 
+            try
             {
                 string szTmpBuf = "";
                 GetEqualString(kWIPHandleFileName, "Handle", ref szTmpBuf);
@@ -56,7 +56,7 @@ namespace ToolSolution.Addins.Mes
 
                 if (m_hMonitorProcessHandle == 0) throw new Exception("FIH Init Fail");
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
@@ -78,7 +78,7 @@ namespace ToolSolution.Addins.Mes
             fs.Close();
 
             //Send message to notify monitor process
-            SendMessage(m_hMonitorProcessHandle, 0x0802, 0, 1);
+            SendMessage(m_hMonitorProcessHandle, 0x0802, 0, i + 1);
 
             //Wait for N_WIP_INFO.txt creation by monitor process
             bool bWIPInfoFileExisted = false;
@@ -112,7 +112,7 @@ namespace ToolSolution.Addins.Mes
             szTmpBuf = "";
             GetEqualString(kWIPInfoFileName[i], "WIP_ID", ref szTmpBuf);
             m_iWIPID[i] = szTmpBuf;
-            m_szResultFileName[i] = string.Format("C:\\eBook_Test\\{0}.txt", m_iWIPID);
+            m_szResultFileName[i] = string.Format("C:\\eBook_Test\\{0}.txt", m_iWIPID[i]);
 
             //Save verified SN
             m_szWIPNo[i] = sParams;
@@ -181,7 +181,7 @@ namespace ToolSolution.Addins.Mes
             {
                 errMessage = "DELETE SYNC FILE FAIL";
                 return false;
-            } 
+            }
 
             //Wait for N_RES_INFO.txt, delete it after read it.
             for (int retryCount = 0; retryCount < retryTime; retryCount++)

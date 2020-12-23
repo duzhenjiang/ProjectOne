@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>ToolSolution</RootNamespace>
     <AssemblyName>ToolSolution</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
@@ -69,13 +69,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Addins\ADBHelper.cs" />
     <Compile Include="Addins\ConfigFile.cs" />
-    <Compile Include="Addins\MesHelper.cs" />
-    <Compile Include="Addins\NFCHelper.cs" />
     <Compile Include="Addins\PortDetect.cs" />
-    <Compile Include="Addins\QLIBHelper.cs" />
-    <Compile Include="Addins\SerialHelper.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -147,8 +142,38 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ADBHelper\ADBHelper.csproj">
+      <Project>{3054fccc-1432-45a8-8081-c76fa465fb49}</Project>
+      <Name>ADBHelper</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MesHelp\MesHelp.csproj">
+      <Project>{450ed05d-c34b-447a-9de0-a68fbf13981e}</Project>
+      <Name>MesHelp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NFCHelper\NFCHelper.csproj">
+      <Project>{847a1b31-c33c-48eb-b376-79f85df004ae}</Project>
+      <Name>NFCHelper</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QLIBHelper\QLIBHelper.csproj">
+      <Project>{b9f4c376-a66a-4776-8617-d339ddc60a61}</Project>
+      <Name>QLIBHelper</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SerialHelper\SerialHelper.csproj">
+      <Project>{d3b0d6e9-5fc8-4963-a312-be7aa93e0ec7}</Project>
+      <Name>SerialHelper</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /e /r /y $(ProjectDir)dll $(TargetDir)</PostBuildEvent>
+    <PostBuildEvent>xcopy /e /r /y $(ProjectDir)config $(TargetDir)
+
+xcopy /e /r /y $(ProjectDir)dll $(TargetDir)DUT1\
+
+xcopy /e /r /y $(ProjectDir)dll $(TargetDir)DUT2\
+
+xcopy /e /r /y $(ProjectDir)dll $(TargetDir)DUT3\
+
+xcopy /e /r /y $(ProjectDir)dll $(TargetDir)DUT4\</PostBuildEvent>
   </PropertyGroup>
 </Project>

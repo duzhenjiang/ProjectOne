@@ -8,9 +8,9 @@ namespace ToolSolution.Addins.Config
 {
 	public class ConfigFile
 	{
-        private readonly string sFilePath;//文件路径
+		private readonly string sFilePath;//文件路径
 
-        [DllImport("kernel32.dll")]
+		[DllImport("kernel32.dll")]
 		private static extern int GetPrivateProfileInt(
 			string lpAppName,
 			string lpKeyName,
@@ -43,22 +43,22 @@ namespace ToolSolution.Addins.Config
 		public ConfigFile(string FilePath)
 		{
 			this.sFilePath = FilePath;
-			try 
+			try
 			{
 				if (!File.Exists(this.sFilePath))
 				{
 					throw new Exception(this.sFilePath + " not exist!");
 				}
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				MessageBox.Show(ex.Message);
 			}
 		}
 
 		/// <summary>
-        /// 构造函数
-        /// </summary>
+		/// 构造函数
+		/// </summary>
 		public ConfigFile()
 		{ }
 
@@ -73,7 +73,7 @@ namespace ToolSolution.Addins.Config
 		{
 			return GetPrivateProfileInt(section, name, def, this.sFilePath);
 		}
-		
+
 		/// <summary>
 		/// 读String的值
 		/// </summary>
@@ -110,6 +110,7 @@ namespace ToolSolution.Addins.Config
 
 		public string LogPath;
 		public string sFlagType;
+		public string SerialPort;
 
 		public int MesOn;
 	}
@@ -135,14 +136,15 @@ namespace ToolSolution.Addins.Config
 		{
 			ConfigFile m_Mainini = new ConfigFile(sMainPath);
 			//Main UI
-			m_mainConfig.sProject = m_Mainini.ReadString("UI","Project","Jason");
+			m_mainConfig.sProject = m_Mainini.ReadString("UI", "Project", "Jason");
 			m_mainConfig.sStation = m_Mainini.ReadString("UI", "Station", "Test");
-			m_mainConfig.iDutNum = m_Mainini.ReadInt("UI","DutNum",1);
+			m_mainConfig.iDutNum = m_Mainini.ReadInt("UI", "DutNum", 1);
 			m_mainConfig.bScan = m_Mainini.ReadInt("UI", "ScanEnable", 1) == 1;
 
 			//Main Test
 			m_mainConfig.LogPath = m_Mainini.ReadString("TEST", "LogPath", "D:\\TestLog");
 			m_mainConfig.sFlagType = m_Mainini.ReadString("TEST", "Flag", "1");
+			m_mainConfig.SerialPort = m_Mainini.ReadString("TEST", "SerialPort", "COM1");
 
 			//Main Mes
 			m_mainConfig.MesOn = m_Mainini.ReadInt("MES", "MesOn", 1);
@@ -175,4 +177,3 @@ namespace ToolSolution.Addins.Config
 		}
 	}
 }
-
