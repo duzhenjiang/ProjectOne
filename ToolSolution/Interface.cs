@@ -1,23 +1,25 @@
-﻿using System;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
+using System.Text;
 
 using ToolSolution.Addins.Config;
 using ToolSolution.Addins.Port;
-using ToolSolution.Addins.Adb;
-using ToolSolution.Addins.NFC;
-using ToolSolution.Addins.Mes;
-using ToolSolution.Addins.QLIB;
+
+using NFCHelper;
+using MesHelper;
+using ADBHelper;
+using QLIBHelper;
+using SerialHelper;
 
 namespace ToolSolution.Addins
 {
     public class Interface
     {
-        readonly ConfigParser m_con = new ConfigParser(Application.StartupPath + "\\Config\\Main.ini");
+        readonly ConfigParser m_con = new ConfigParser(Application.StartupPath + "\\Main.ini");
         readonly PortDetect m_port = new PortDetect();
-        readonly ADBHelper m_adb = new ADBHelper();
-        readonly NFCHelper m_nfc = new NFCHelper();
-        readonly MesHelper m_mes = new MesHelper();
-        readonly QLIBHelper m_qlib = new QLIBHelper();
+        readonly NFC m_nfc = new NFC();
+        readonly Mes m_mes = new Mes();
+        readonly QLIB m_qlib = new QLIB();
+        readonly Serial m_serial = new Serial();
 
         #region Port
         /// <summary>
@@ -91,9 +93,22 @@ namespace ToolSolution.Addins
             return m_con.GetMainPara().LogPath;
         }
 
+        /// <summary>
+        /// 获取Flag
+        /// </summary>
+        /// <returns></returns>
         public string GetFlagType()
         {
             return m_con.GetMainPara().sFlagType;
+        }
+
+        /// <summary>
+        /// 获取设备端口
+        /// </summary>
+        /// <returns></returns>
+        public string GetSerialPort()
+        {
+            return m_con.GetMainPara().SerialPort;
         }
 
         /// <summary>
@@ -121,7 +136,7 @@ namespace ToolSolution.Addins
         /// <returns></returns>
         public int GetComPort(int iDut)
         {
-            return m_con.GetDutPara(Application.StartupPath + "\\Config\\Dut.ini", iDut).iComNum;
+            return m_con.GetDutPara(Application.StartupPath + "\\Dut.ini", iDut).iComNum;
         }
 
         /// <summary>
@@ -131,7 +146,7 @@ namespace ToolSolution.Addins
         /// <returns></returns>
         public string GetDeviceID(int iDut)
         {
-            return m_con.GetDutPara(Application.StartupPath + "\\Config\\Dut.ini", iDut).sDeviceID;
+            return m_con.GetDutPara(Application.StartupPath + "\\Dut.ini", iDut).sDeviceID;
         }
         #endregion
 
@@ -189,11 +204,12 @@ namespace ToolSolution.Addins
         /// <param name="bOutput"></param>
         public void ADBInterface(int i, string sCmd, out string sResp, bool bOutput = true)
         {
+            ADB m_adb = new ADB();
             if (GetDutNum() > 1)
             {
                 sCmd = string.Format("-s {0} {1}", GetDeviceID(i), sCmd);
             }
-            m_adb.ADBCommend(sCmd, out sResp, bOutput);
+            m_adb.ADBCommend(i, sCmd, out sResp, bOutput);
         }
         #endregion
 
@@ -215,6 +231,18 @@ namespace ToolSolution.Addins
         public int NFC_Test(uint Handle)
         {
             return m_nfc.BS_dc_test(Handle);
+        }
+        #endregion
+
+        #region Serial
+        /// <summary>
+        /// 串口测试函数
+        /// </summary>
+        /// <param name="bCmd">命令</param>
+        /// <returns></returns>
+        public string SerialInterface(byte[] bCmd)
+        {
+            return Encoding.Default.GetString(m_serial.SerialCommend(GetSerialPort(), bCmd));
         }
         #endregion
     }

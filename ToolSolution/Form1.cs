@@ -6,6 +6,8 @@ using System.Threading;
 using System.Windows.Forms;
 
 using ToolSolution.Addins;
+using ADBHelper;
+using SerialHelper;
 
 namespace ToolSolution
 {
@@ -14,11 +16,12 @@ namespace ToolSolution
         readonly FormLog m_formlog = new FormLog();
         readonly Interface m_intface = new Interface();
         readonly FormScan m_formscan = new FormScan();
+        readonly Mutex mutex = new Mutex();
 
         /// <summary>
         /// 工站枚举
         /// </summary>
-        public enum Station 
+        public enum Station
         {
             //单板
             ED,
@@ -56,7 +59,7 @@ namespace ToolSolution
             CQR,
         }
 
-        public string Version = "V1.0.0";
+        public string Version = "V1.0.3";
         public int iNowDut;
         public int TimeCount = 0;
         public string ScanText;
@@ -74,9 +77,10 @@ namespace ToolSolution
         public DateTime[] endTimes = new DateTime[4];
 
         //NFC
-        public bool bOnlyOne = false;
         public bool bTest1 = false;
         public bool bTest2 = false;
+        public bool bMove = false;
+        public bool bReset = false;
 
         //SCAN
         public string sText;
@@ -93,6 +97,8 @@ namespace ToolSolution
 
             m_intface.MesInit();
 
+            InitLog();
+
             if (m_intface.GetStation() == "NFC")
             {
                 for (int i = 0; i < m_intface.GetDutNum(); i++)
@@ -101,13 +107,19 @@ namespace ToolSolution
                     {
                         case 0:
                             iNowDut = 0;
-                            Thread Test1 = new Thread(new ThreadStart(NFCTest1));
+                            Thread Test1 = new Thread(new ThreadStart(NFCTest1))
+                            {
+                                IsBackground = true
+                            };
                             Test1.Start();
                             Thread.Sleep(100);
                             break;
                         case 1:
                             iNowDut = 1;
-                            Thread Test2 = new Thread(new ThreadStart(NFCTest2));
+                            Thread Test2 = new Thread(new ThreadStart(NFCTest2))
+                            {
+                                IsBackground = true
+                            };
                             Test2.Start();
                             Thread.Sleep(100);
                             break;
@@ -121,7 +133,10 @@ namespace ToolSolution
                 for (int i = 0; i < m_intface.GetDutNum(); i++)
                 {
                     iNowDut = i;
-                    Thread Test = new Thread(new ThreadStart(MainTest));
+                    Thread Test = new Thread(new ThreadStart(MainTest))
+                    {
+                        IsBackground = true
+                    };
                     Test.Start();
                     Thread.Sleep(100);
                 }
@@ -140,41 +155,41 @@ namespace ToolSolution
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
             m_formlog.Close();
-            KillProcess("adb");
-            Thread.Sleep(1000);
-            if (m_intface.GetStation() == "NFC")
-            {
-                for (int i = 0; i < m_intface.GetDutNum(); i++)
-                {
-                    switch (i)
-                    {
-                        case 0:
-                            iNowDut = 0;
-                            Thread Test1 = new Thread(new ThreadStart(NFCTest1));
-                            Test1.Abort();
-                            Thread.Sleep(100);
-                            break;
-                        case 1:
-                            iNowDut = 1;
-                            Thread Test2 = new Thread(new ThreadStart(NFCTest2));
-                            Test2.Abort();
-                            Thread.Sleep(100);
-                            break;
-                        default:
-                            throw new Exception("The max Dut number is 2");
-                    }
-                }
-            }
-            else
-            {
-                for (int i = 0; i < m_intface.GetDutNum(); i++)
-                {
-                    iNowDut = i;
-                    Thread Test = new Thread(new ThreadStart(MainTest));
-                    Test.Abort();
-                    Thread.Sleep(100);
-                }
-            }
+            //KillProcess("adb");
+            //Thread.Sleep(1000);
+            //if (m_intface.GetStation() == "NFC")
+            //{
+            //    for (int i = 0; i < m_intface.GetDutNum(); i++)
+            //    {
+            //        switch (i)
+            //        {
+            //            case 0:
+            //                iNowDut = 0;
+            //                Thread Test1 = new Thread(new ThreadStart(NFCTest1));
+            //                Test1.Abort();
+            //                Thread.Sleep(100);
+            //                break;
+            //            case 1:
+            //                iNowDut = 1;
+            //                Thread Test2 = new Thread(new ThreadStart(NFCTest2));
+            //                Test2.Abort();
+            //                Thread.Sleep(100);
+            //                break;
+            //            default:
+            //                throw new Exception("The max Dut number is 2");
+            //        }
+            //    }
+            //}
+            //else
+            //{
+            //    for (int i = 0; i < m_intface.GetDutNum(); i++)
+            //    {
+            //        iNowDut = i;
+            //        Thread Test = new Thread(new ThreadStart(MainTest));
+            //        Test.Abort();
+            //        Thread.Sleep(100);
+            //    }
+            //}
 
             Environment.Exit(0);
         }
@@ -205,7 +220,7 @@ namespace ToolSolution
         /// </summary>
         private void InitUI()
         {
-            try 
+            try
             {
                 this.Text = m_intface.GetProject() + "_" + m_intface.GetStation() + "_" + Version;
                 this.tableLayoutPanel2.ColumnCount = m_intface.GetDutNum();
@@ -279,6 +294,22 @@ namespace ToolSolution
         }
 
         /// <summary>
+        /// Init log路径
+        /// </summary>
+        private void InitLog()
+        {
+            try
+            {
+                Directory.CreateDirectory(m_intface.GetLogPath());
+                Directory.Exists(m_intface.GetLogPath());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        /// <summary>
         /// 初始化ListView
         /// </summary>
         /// <param name="listV"></param>
@@ -295,7 +326,7 @@ namespace ToolSolution
             listV.Columns.Add("Up", (int)(width * 0.10), HorizontalAlignment.Left);
             listV.Columns.Add("Low", (int)(width * 0.10), HorizontalAlignment.Left);
             listV.Columns.Add("Result", (int)(width * 0.08), HorizontalAlignment.Left);
-            listV.Columns.Add("Time", (int)(width * 0.1),HorizontalAlignment.Left);
+            listV.Columns.Add("Time", (int)(width * 0.1), HorizontalAlignment.Left);
         }
 
         /// <summary>
@@ -399,10 +430,10 @@ namespace ToolSolution
         /// <param name="i"></param>
         private void TestFinal(int i)
         {
-            labels[i].Text = "WAIT";
-            labels[i].BackColor = Color.Gray;
+            //labels[i].Text = "WAIT";
+            //labels[i].BackColor = Color.Gray;
             labelbsns[i].Text = "";
-            KillProcess("adb");
+            //KillProcess("adb");
         }
 
         /// <summary>
@@ -412,6 +443,7 @@ namespace ToolSolution
         {
             int i = iNowDut;
         BEGIN:
+            KillProcess("adb");
             bool bResult = true;
             bool bMesCheckRes = false;
             try
@@ -457,19 +489,27 @@ namespace ToolSolution
                 }
                 InsertListView(listViews[i], "WriteNFCFlag", "P", "-", "-", true, GetTestTime(i));
                 //Final
-                ResultUpdate(i, bMesCheckRes, bResult);
-                TestPassEnd(i);
+                bResult = ResultUpdate(i, bMesCheckRes, bResult);
+                if (bResult)
+                {
+                    TestPassEnd(i);
+                }
+                else
+                {
+                    TestFailEnd(i);
+                }
             }
             catch (Exception ex)
             {
                 bResult = false;
-                ResultUpdate(i,bMesCheckRes,bResult);
+                ResultUpdate(i, bMesCheckRes, bResult);
                 TestFailEnd(i);
                 m_formlog.InsertListView(i, ex.Message);
             }
             finally
             {
                 SaveLog(i, bResult);
+                ADBReboot(i);
                 m_intface.DetectPort(false, m_intface.GetComPort(i));
                 TestFinal(i);
             }
@@ -485,15 +525,22 @@ namespace ToolSolution
         BEGIN:
             bool bResult = true;
             bool bMesCheckRes = false;
-            bOnlyOne = false;
+            bTest1 = false;
+            //KillProcess("adb");
+            if (mutex.WaitOne())
+            {
+                bMove = false;
+                bReset = false;
+                mutex.ReleaseMutex();
+            }
             try
             {
-                bOnlyOne = false;
-                m_intface.DetectPort(true, m_intface.GetComPort(i));
+                //m_intface.DetectPort(true, m_intface.GetComPort(i));
+                DetectDevice(true, i);
                 TestBegin(i);
 
-                DevcieInit(i);//设备初始化
-                InsertListView(listViews[i], "InitDevice", "-", "-", "-", true, GetTestTime(i));
+                //DevcieInit(i);//设备初始化
+                //InsertListView(listViews[i], "InitDevice", "-", "-", "-", true, GetTestTime(i));
 
                 BSN[i] = GetPhoneBSN(i);
                 if (BSN[i] == "")
@@ -505,10 +552,10 @@ namespace ToolSolution
 
                 if (!ReadFlagOperate(i, (int)Station.NFC))
                 {
-                    InsertListView(listViews[i], "ReadNFCFlag", "-", "-", "-", false, GetTestTime(i));
-                    throw new Exception("Read NFC Flag Fail!");
+                    InsertListView(listViews[i], "ReadAECFlag", "-", "-", "-", false, GetTestTime(i));
+                    throw new Exception("Read AEC Flag Fail!");
                 }
-                InsertListView(listViews[i], "ReadNFCFlag", "P", "-", "-", true, GetTestTime(i));
+                InsertListView(listViews[i], "ReadAECFlag", "P", "-", "-", true, GetTestTime(i));
 
                 bMesCheckRes = m_intface.MesCheck(i, BSN[i], out string errMessage);
                 if (!bMesCheckRes)
@@ -538,16 +585,25 @@ namespace ToolSolution
                 InsertListView(listViews[i], "NFCD8Test", "1", "-", "-", true, GetTestTime(i));
 
                 bTest1 = true;
-                while (true)
+                Thread.Sleep(1000);
+                if (mutex.WaitOne())
                 {
-                    if (m_intface.GetDutNum()==1 || bOnlyOne == true || (bTest1&&bTest2))
+                    int count = 0;
+                    while (!bMove)
                     {
-                        break;
+                        if (m_intface.GetDutNum() == 1 || (bTest1 && bTest2) || count == 1000)
+                        {
+                            SerNFCMove(i);
+                            bMove = true;
+                            break;
+                        }
+                        Thread.Sleep(10);
+                        count++;
                     }
-                    Thread.Sleep(10);
+                    mutex.ReleaseMutex();
                 }
                 bTest1 = false;
-
+                Thread.Sleep(3000);
                 if (!NFCReset(i))
                 {
                     InsertListView(listViews[i], "NFCReset", "-", "-", "-", false, GetTestTime(i));
@@ -562,39 +618,57 @@ namespace ToolSolution
                 }
                 InsertListView(listViews[i], "NFCCardRead", "1", "-", "-", true, GetTestTime(i));
 
-                bTest1 = true;
-                while (true)
-                {
-                    if (m_intface.GetDutNum() == 1 || bOnlyOne == true || (bTest1 && bTest2))
-                    {
-                        break;
-                    }
-                    Thread.Sleep(10);
-                }
-                bTest1 = false;
-
                 if (!WriteFlagOperate(i, (int)Station.NFC))
                 {
                     InsertListView(listViews[i], "WriteNFCFlag", "-", "-", "-", false, GetTestTime(i));
                     throw new Exception("Write NFC Flag Fail!");
                 }
                 InsertListView(listViews[i], "WriteNFCFlag", "P", "-", "-", true, GetTestTime(i));
+
+                bTest1 = true;
+                Thread.Sleep(1000);
+                if (mutex.WaitOne())
+                {
+                    int count = 0;
+                    while (!bReset)
+                    {
+                        if (m_intface.GetDutNum() == 1 || (bTest1 && bTest2) || count == 1000)
+                        {
+                            SerNFCReset(i);
+                            bReset = true;
+                            break;
+                        }
+                        Thread.Sleep(10);
+                        count++;
+                    }
+                    mutex.ReleaseMutex();
+                }
+                bTest1 = false;
+
                 //Final
-                ResultUpdate(i, bMesCheckRes, bResult);
-                TestPassEnd(i);
+                bResult = ResultUpdate(i, bMesCheckRes, bResult);
+                if (bResult)
+                {
+                    TestPassEnd(i);
+                }
+                else
+                {
+                    TestFailEnd(i);
+                }
             }
             catch (Exception ex)
             {
                 bResult = false;
                 ResultUpdate(i, bMesCheckRes, bResult);
                 TestFailEnd(i);
-                bOnlyOne = true;
+                bTest1 = true;
                 m_formlog.InsertListView(i, ex.Message);
             }
             finally
             {
                 SaveLog(i, bResult);
-                m_intface.DetectPort(false, m_intface.GetComPort(i));
+                //m_intface.DetectPort(false, m_intface.GetComPort(i));
+                DetectDevice(false, i);
                 TestFinal(i);
             }
             goto BEGIN;
@@ -609,14 +683,22 @@ namespace ToolSolution
         BEGIN:
             bool bResult = true;
             bool bMesCheckRes = false;
-            bOnlyOne = false;
+            bTest2 = false;
+            //KillProcess("adb");
+            if (mutex.WaitOne())
+            {
+                bMove = false;
+                bReset = false;
+                mutex.ReleaseMutex();
+            }
             try
             {
-                m_intface.DetectPort(true, m_intface.GetComPort(i));
+                //m_intface.DetectPort(true, m_intface.GetComPort(i));
+                DetectDevice(true, i);
                 TestBegin(i);
 
-                DevcieInit(i);//设备初始化
-                InsertListView(listViews[i], "InitDevice", "-", "-", "-", true, GetTestTime(i));
+                //DevcieInit(i);//设备初始化
+                //InsertListView(listViews[i], "InitDevice", "-", "-", "-", true, GetTestTime(i));
                 Thread.Sleep(200);
 
                 BSN[i] = GetPhoneBSN(i);
@@ -629,10 +711,10 @@ namespace ToolSolution
 
                 if (!ReadFlagOperate(i, (int)Station.NFC))
                 {
-                    InsertListView(listViews[i], "ReadNFCFlag", "-", "-", "-", false, GetTestTime(i));
-                    throw new Exception("Read NFC Flag Fail!");
+                    InsertListView(listViews[i], "ReadAECFlag", "-", "-", "-", false, GetTestTime(i));
+                    throw new Exception("Read AEC Flag Fail!");
                 }
-                InsertListView(listViews[i], "ReadNFCFlag", "P", "-", "-", true, GetTestTime(i));
+                InsertListView(listViews[i], "ReadAECFlag", "P", "-", "-", true, GetTestTime(i));
 
                 bMesCheckRes = m_intface.MesCheck(i, BSN[i], out string errMessage);
                 if (!bMesCheckRes)
@@ -665,13 +747,22 @@ namespace ToolSolution
                 InsertListView(listViews[i], "NFCCardRead", "1", "-", "-", true, GetTestTime(i));
 
                 bTest2 = true;
-                while (true)
+                Thread.Sleep(1000);
+                if (mutex.WaitOne())
                 {
-                    if (m_intface.GetDutNum() == 1 || bOnlyOne == true || (bTest1 && bTest2))
+                    int count = 0;
+                    while (!bMove)
                     {
-                        break;
+                        if (m_intface.GetDutNum() == 1 || (bTest1 && bTest2) || count == 1000)
+                        {
+                            SerNFCMove(i);
+                            bMove = true;
+                            break;
+                        }
+                        Thread.Sleep(10);
+                        count++;
                     }
-                    Thread.Sleep(10);
+                    mutex.ReleaseMutex();
                 }
                 bTest2 = false;
 
@@ -686,39 +777,58 @@ namespace ToolSolution
                 }
                 InsertListView(listViews[i], "NFCD8Test", "1", "-", "-", true, GetTestTime(i));
 
-                bTest2 = true;
-                while (true)
-                {
-                    if (m_intface.GetDutNum() == 1 || bOnlyOne == true || (bTest1 && bTest2))
-                    {
-                        break;
-                    }
-                    Thread.Sleep(10);
-                }
-                bTest2 = false;
-
                 if (!WriteFlagOperate(i, (int)Station.NFC))
                 {
                     InsertListView(listViews[i], "WriteNFCFlag", "-", "-", "-", false, GetTestTime(i));
                     throw new Exception("Write NFC Flag Fail!");
                 }
                 InsertListView(listViews[i], "WriteNFCFlag", "P", "-", "-", true, GetTestTime(i));
+
+                bTest2 = true;
+                Thread.Sleep(1000);
+                if (mutex.WaitOne())
+                {
+                    int count = 0;
+                    while (!bReset)
+                    {
+                        if (m_intface.GetDutNum() == 1 || (bTest1 && bTest2) || count == 1000)
+                        {
+                            SerNFCReset(i);
+                            bReset = true;
+                            break;
+                        }
+                        Thread.Sleep(10);
+                        count++;
+                    }
+                    mutex.ReleaseMutex();
+                }
+                bTest2 = false;
+                Thread.Sleep(1500);
+
                 //Final
-                ResultUpdate(i, bMesCheckRes, bResult);
-                TestPassEnd(i);
+                bResult = ResultUpdate(i, bMesCheckRes, bResult);
+                if (bResult)
+                {
+                    TestPassEnd(i);
+                }
+                else
+                {
+                    TestFailEnd(i);
+                }
             }
             catch (Exception ex)
             {
                 bResult = false;
                 ResultUpdate(i, bMesCheckRes, bResult);
                 TestFailEnd(i);
-                bOnlyOne = true;
+                bTest2 = true;
                 m_formlog.InsertListView(i, ex.Message);
             }
             finally
             {
                 SaveLog(i, bResult);
-                m_intface.DetectPort(false, m_intface.GetComPort(i));
+                //m_intface.DetectPort(false, m_intface.GetComPort(i));
+                DetectDevice(false, i);
                 TestFinal(i);
             }
             goto BEGIN;
@@ -731,20 +841,20 @@ namespace ToolSolution
         /// <param name="bResult"></param>
         private void SaveLog(int iDut, bool bResult)
         {
-            string strLogPath = m_intface.GetLogPath() + 
-                @"\DUT" + (iDut + 1).ToString() + 
-                @"\" + m_intface.GetProject() + 
-                @"\" + m_intface.GetStation() + 
-                @"\" + DateTime.Now.ToString("M") + 
-                @"\" + (m_intface.GetMesStatus() == 1? "Online" : "Offline") +
+            string strLogPath = m_intface.GetLogPath() +
+                @"\DUT" + (iDut + 1).ToString() +
+                @"\" + m_intface.GetProject() +
+                @"\" + m_intface.GetStation() +
+                @"\" + DateTime.Now.ToString("M") +
+                @"\" + (m_intface.GetMesStatus() == 1 ? "Online" : "Offline") +
                 @"\" + (bResult == true ? "Pass" : "Fail");
 
             string strReportFileName = (m_intface.GetMesStatus() == 1 ? "Online" : "Offline") +
-                "_Report_" + BSN[iDut] + "_" + DateTime.Now.ToString("G").Replace(":","-").Replace("/","-") + 
+                "_Report_" + BSN[iDut] + "_" + DateTime.Now.ToString("G").Replace(":", "-").Replace("/", "-") +
                 "_" + (bResult == true ? "Pass" : "Fail") + ".txt";
 
             string strDebugFileName = (m_intface.GetMesStatus() == 1 ? "Online" : "Offline") +
-                "_Debug_" + BSN[iDut] + "_" + DateTime.Now.ToString("G").Replace(":","-").Replace("/", "-") +
+                "_Debug_" + BSN[iDut] + "_" + DateTime.Now.ToString("G").Replace(":", "-").Replace("/", "-") +
                 "_" + (bResult == true ? "Pass" : "Fail") + ".txt";
 
             string strReportLogPath = strLogPath + @"\Report\" + strReportFileName;
@@ -759,7 +869,7 @@ namespace ToolSolution
                 for (int i = 0; i < listViews[iDut].Items.Count; i++)
                 {
                     StringBuilder sb = new StringBuilder();
-                    sb.Append("TEST_ITEM_" + String.Format("{0:00}",(i + 1)) + "=");
+                    sb.Append("TEST_ITEM_" + String.Format("{0:00}", (i + 1)) + "=");
                     for (int j = 1; j < listViews[iDut].Items[i].SubItems.Count - 1; j++)
                     {
                         if (j == 1)
@@ -771,7 +881,7 @@ namespace ToolSolution
                             sb.Append(listViews[iDut].Items[i].SubItems[j].Text).Append("^").Append("1");
                         }
                         else
-                        { 
+                        {
                             sb.Append(listViews[iDut].Items[i].SubItems[j].Text).Append("^");
                         }
                     }
@@ -802,16 +912,16 @@ namespace ToolSolution
                 fs.Close();
             }
         }
-        
+
         /// <summary>
         /// 测试结果上传
         /// </summary>
         /// <param name="iDut">i</param>
         /// <param name="bCheck">MesCheck测试结果</param>
         /// <param name="bResult">测试结果</param>
-        private void ResultUpdate(int iDut, bool bCheck, bool bResult)
+        private bool ResultUpdate(int iDut, bool bCheck, bool bResult)
         {
-            if (m_intface.GetMesStatus()==1 && bCheck)
+            if (m_intface.GetMesStatus() == 1 && bCheck)
             {
                 string strMesLogPath = m_intface.GetResultPathName(iDut);
                 if (!File.Exists(strMesLogPath))
@@ -848,12 +958,15 @@ namespace ToolSolution
                 {
                     InsertListView(listViews[iDut], "MesUpdate", errMessage, "-", "-", false, GetTestTime(iDut));
                     m_formlog.InsertListView(iDut, errMessage);
+                    return false;
                 }
                 else
                 {
                     InsertListView(listViews[iDut], "MesUpdate", "P", "-", "-", true, GetTestTime(iDut));
+                    return true;
                 }
             }
+            return true;
         }
 
         /// <summary>
@@ -920,9 +1033,33 @@ namespace ToolSolution
         /// <param name="bOutput"></param>
         public void ADBCommon(int i, string sCmd, out string sResp, bool bOutput = true)
         {
-            m_intface.ADBInterface(i, sCmd, out sResp, bOutput);
+            //m_intface.ADBInterface(i, sCmd, out sResp, bOutput);
+            ADB m_adb = new ADB();
+            if (m_intface.GetDutNum() > 1)
+            {
+                sCmd = string.Format("-s {0} {1}", m_intface.GetDeviceID(i), sCmd);
+            }
+            m_adb.ADBCommend(i, sCmd, out sResp, bOutput);
             m_formlog.InsertListView(i, "adb " + sCmd);
             m_formlog.InsertListView(i, sResp);
+        }
+
+        /// <summary>
+        /// adb通用接口不打印log
+        /// </summary>
+        /// <param name="i">i</param>
+        /// <param name="sCmd">命令</param>
+        /// <param name="sResp">返回</param>
+        /// <param name="bOutput"></param>
+        public void ADBCommonNoLog(int i, string sCmd, out string sResp, bool bOutput = true)
+        {
+            //m_intface.ADBInterface(i, sCmd, out sResp, bOutput);
+            ADB m_adb = new ADB();
+            if (m_intface.GetDutNum() > 1)
+            {
+                sCmd = string.Format("-s {0} {1}", m_intface.GetDeviceID(i), sCmd);
+            }
+            m_adb.ADBCommend(i, sCmd, out sResp, bOutput);
         }
 
         /// <summary>
@@ -934,6 +1071,27 @@ namespace ToolSolution
             ADBCommon(i, "devices", out _);
             ADBCommon(i, "root", out _);
             ADBCommon(i, "remount", out _);
+        }
+
+        /// <summary>
+        /// 检查设备在位
+        /// </summary>
+        /// <param name="bApper"></param>
+        /// <param name="i"></param>
+        private void DetectDevice(bool bApper, int i)
+        {
+            while (true)
+            {
+                ADBCommonNoLog(i, "devices", out string sResp);
+                if (bApper)
+                {
+                    if (sResp.Contains(m_intface.GetDeviceID(i))) break;
+                }
+                else
+                {
+                    if (!sResp.Contains(m_intface.GetDeviceID(i))) break;
+                }
+            }
         }
 
         /// <summary>
@@ -954,6 +1112,7 @@ namespace ToolSolution
                 }
                 Thread.Sleep(1000);
             }
+            this.labelbsns[i].Text = "XXXXXXXXXXXX";
             return "";
         }
 
@@ -966,9 +1125,9 @@ namespace ToolSolution
         private bool ReadFlagOperate(int i, int iStation)
         {
             string sCmd = "shell bs_nvops rd 2498 " + (iStation - 1).ToString() + " 1";
-            for (int j = 0; j < 5; j++) 
+            for (int j = 0; j < 5; j++)
             {
-                if (m_intface.GetFlagType() == "1" || m_intface.GetFlagType().ToUpper() == "R") 
+                if (m_intface.GetFlagType() == "1" || m_intface.GetFlagType().ToUpper() == "R")
                 {
                     ADBCommon(i, sCmd, out string sResp);
                     if (sResp != "\r\n")
@@ -979,6 +1138,10 @@ namespace ToolSolution
                             return true;
                         }
                     }
+                }
+                else
+                {
+                    return true;
                 }
             }
             return false;
@@ -1010,6 +1173,10 @@ namespace ToolSolution
                         }
                     }
                 }
+                else
+                {
+                    return true;
+                }
             }
             return false;
         }
@@ -1021,10 +1188,10 @@ namespace ToolSolution
         /// <returns></returns>
         private bool CloseNFC(int i)
         {
-            for (int j=0; j<5; j++)
+            for (int j = 0; j < 5; j++)
             {
                 ADBCommon(i, "shell \"mi-factory-tool -f /vendor/etc/factory_cmd_config/connectivity.xml -i \\\"NFC Disable\\\" \"", out string sResp);
-                if (sResp.Replace("\r\n","") == "1")
+                if (sResp.Replace("\r\n", "") == "1")
                 {
                     return true;
                 }
@@ -1082,6 +1249,54 @@ namespace ToolSolution
         }
 
         /// <summary>
+        /// DUT重启
+        /// </summary>
+        /// <param name="i"></param>
+        private void ADBReboot(int i)
+        {
+            ADBCommon(i, "reboot", out _);
+        }
+
+        /// <summary>
+        /// Serial通用接口
+        /// </summary>
+        /// <param name="i">i</param>
+        /// <param name="bCmd">命令</param>
+        /// <param name="sResp">返回</param>
+        public void SerialCommon(int i, byte[] bCmd, out string sResp)
+        {
+            Serial m_serial = new Serial();
+            //sResp = m_intface.SerialInterface(bCmd);
+            sResp = Encoding.Default.GetString(m_serial.SerialCommend(m_intface.GetSerialPort(), bCmd));
+            m_formlog.InsertListView(i, Encoding.Default.GetString(bCmd));
+            m_formlog.InsertListView(i, sResp);
+        }
+
+        /// <summary>
+        /// NFC转向
+        /// </summary>
+        /// <param name="i">i</param>
+        /// <returns></returns>
+        private bool SerNFCMove(int i)
+        {
+            byte[] bCmd = { 0x53, 0x02, 0x00, 0x55 };
+            SerialCommon(i, bCmd, out _);
+            return true;
+        }
+
+        /// <summary>
+        /// NFC转向
+        /// </summary>
+        /// <param name="i">i</param>
+        /// <returns></returns>
+        private bool SerNFCReset(int i)
+        {
+            byte[] bCmd = { 0x53, 0x0A, 0x00, 0x00 };
+            SerialCommon(i, bCmd, out _);
+            return true;
+        }
+
+        /// <summary>
         /// NFC D8 Test
         /// </summary>
         /// <param name="i"></param>
@@ -1090,7 +1305,7 @@ namespace ToolSolution
         {
             uint NfcHandle = 0;
             int j;
-            for (j=0; j < 5; j++)
+            for (j = 0; j < 5; j++)
             {
                 NfcHandle = m_intface.NFC_Init();
                 if (NfcHandle <= 0)

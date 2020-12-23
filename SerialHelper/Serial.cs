@@ -2,11 +2,11 @@
 using System.Threading;
 using System.IO.Ports;
 
-namespace ToolSolution.Addins.Serial
+namespace SerialHelper
 {
-    class SerialHelper
+    public class Serial
     {
-        public void SerialComment(string sPort, byte[] bCmd, out byte[] bResp)
+        public byte[] SerialCommend(string sPort, byte[] bCmd)
         {
             SerialPort serialPort = new SerialPort
             {
@@ -23,7 +23,7 @@ namespace ToolSolution.Addins.Serial
             {
                 serialPort.Open();
             }
-            else 
+            else
             {
                 serialPort.Close();
                 serialPort.Open();
@@ -36,9 +36,10 @@ namespace ToolSolution.Addins.Serial
             }
             Thread.Sleep(50);
 
-            bResp = null;
-            serialPort.Read(bResp, 0, serialPort.BytesToRead);
+            byte[] bResp = new byte[serialPort.BytesToRead];
+            serialPort.Read(bResp, 0, bResp.Length);
             serialPort.Close();
+            return bResp;
         }
     }
 }

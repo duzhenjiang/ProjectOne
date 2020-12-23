@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 
-namespace ToolSolution.Addins.QLIB
+namespace QLIBHelper
 {
-    class QLIBHelper
+    public class QLIB
     {
         const string DllName = "QMSL_MSVC10R.dll";
 
