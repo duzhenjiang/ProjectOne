@@ -452,7 +452,6 @@ namespace ToolSolution
                 m_intface.DetectPort(true, m_intface.GetComPort(i));
                 TestBegin(i);
 
-                m_intface.GetQlibHandle(i);
                 m_intface.ConnectPhone(i);
 
                 DevcieInit(i);//设备初始化

@@ -36,14 +36,6 @@ namespace ToolSolution.Addins
         #endregion
 
         #region QLIB
-        /// <summary>
-        /// 获得QLIB Handle
-        /// </summary>
-        /// <param name="i"></param>
-        public void GetQlibHandle(int i)
-        {
-            m_qlib.QlibHandle[i] = m_qlib.ConnectServer(GetComPort(i));
-        }
 
         /// <summary>
         /// 连接手机
